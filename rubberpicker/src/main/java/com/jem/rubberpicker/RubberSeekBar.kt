@@ -30,6 +30,8 @@ class RubberSeekBar : View {
     private var x2 = 0f
     private var y2 = 0f
 
+    private var elasticBehavior: ElasticBehavior = ElasticBehavior.cubic
+
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
             super(context, attrs, defStyleAttr)
     constructor(context: Context, attrs: AttributeSet?) :
