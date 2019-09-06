@@ -98,4 +98,24 @@ class RubberSeekBar : View {
     private fun Float.coerceVertical(): Float {
         return this.coerceAtMost(height.toFloat()).coerceAtLeast(0f)
     }
+
+    private fun Float.coerceToStretchRange(x: Float): Float {
+        return if (this<=height/2) {
+            this.coerceAtLeast(
+                if (x <= width/2) {
+                    (((2*stretchRange - height)*(x))/width)+(height/2)
+                } else {
+                    (((2*stretchRange - height)*(width - x))/width)+(height/2)
+                }
+            )
+        } else {
+            this.coerceAtMost(
+                if (x <= width/2) {
+                    -(((2*stretchRange - height)*(x))/width)+(height/2)
+                } else {
+                    -(((2*stretchRange - height)*(width - x))/width)+(height/2)
+                }
+            )
+        }
+    }
 }
