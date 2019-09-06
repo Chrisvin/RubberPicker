@@ -23,6 +23,11 @@ class RubberSeekBar : View {
     private var controlX: Float = width.toFloat()/2
     private var controlY: Float = height.toFloat()/2
 
+    private var x1 = 0f
+    private var y1 = 0f
+    private var x2 = 0f
+    private var y2 = 0f
+
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
             super(context, attrs, defStyleAttr)
     constructor(context: Context, attrs: AttributeSet?) :
@@ -36,7 +41,17 @@ class RubberSeekBar : View {
         paint.strokeWidth = 10F
         path.reset()
         path.moveTo(0f, height.toFloat()/2)
-        path.quadTo(controlX, controlY, width.toFloat(), height.toFloat()/2)
+//        path.quadTo(controlX, controlY, width.toFloat(), height.toFloat()/2)
+        x1 = (controlX)/2
+        y1 = height.toFloat()/2
+        x2 = x1
+        y2 = controlY
+        path.cubicTo(x1, y1, x2, y2, controlX, controlY)
+        x1 = (controlX + width.toFloat())/2
+        y1 = controlY
+        x2 = x1
+        y2 = height.toFloat()/2
+        path.cubicTo(x1, y1, x2, y2, width.toFloat(), height.toFloat()/2)
 
         canvas?.drawPath(path, paint)
 
