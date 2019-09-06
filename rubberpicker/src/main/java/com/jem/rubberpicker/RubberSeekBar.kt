@@ -16,6 +16,8 @@ class RubberSeekBar : View {
     private val paint: Paint by lazy {
         val tempPaint = Paint()
         tempPaint.style = Paint.Style.STROKE
+        tempPaint.color = Color.GRAY
+        tempPaint.strokeWidth = 5f
         tempPaint
     }
     private var path: Path = Path()
@@ -37,8 +39,14 @@ class RubberSeekBar : View {
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
-        paint.color = Color.RED
-        paint.strokeWidth = 10F
+        drawTrack(canvas)
+        //TODO - Add drawable function
+        //TODO - Use SpringAnimation & SpringForce instead of ValueAnimator
+        //TODO - Assign min, max values and get 'seekbar' values
+        //TODO - Expand logic to RubberRangePicker
+    }
+
+    private fun drawTrack(canvas: Canvas?) {
         path.reset()
         path.moveTo(0f, height.toFloat()/2)
 //        path.quadTo(controlX, controlY, width.toFloat(), height.toFloat()/2)
@@ -54,12 +62,6 @@ class RubberSeekBar : View {
         path.cubicTo(x1, y1, x2, y2, width.toFloat(), height.toFloat()/2)
 
         canvas?.drawPath(path, paint)
-
-        //TODO - Move to draw path function
-        //TODO - Add drawable function
-        //TODO - Use SpringAnimation & SpringForce instead of ValueAnimator
-        //TODO - Assign min, max values and get 'seekbar' values
-        //TODO - Expand logic to RubberRangePicker
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
@@ -67,14 +69,14 @@ class RubberSeekBar : View {
             return super.onTouchEvent(event)
         }
         if (event.action == MotionEvent.ACTION_DOWN || event.action == MotionEvent.ACTION_MOVE) {
-            controlX = event.x.coerceAtMost(width.toFloat()).coerceAtLeast(0f)
-            controlY = event.y.coerceAtMost(height.toFloat()).coerceAtLeast(0f)
+            controlX = event.x.coerceHorizontal()
+            controlY = event.y.coerceVertical()
             invalidate()
             return true
         } else if (event.action == MotionEvent.ACTION_UP || event.action == MotionEvent.ACTION_CANCEL){
             valueAnimator?.cancel()
             valueAnimator = ValueAnimator.ofFloat(
-                event.y.coerceAtMost(height.toFloat()).coerceAtLeast(0f),
+                event.y.coerceVertical(),
                 height.toFloat()/2)
             valueAnimator?.interpolator = CustomBounceInterpolator(0.5, 30.0)
             valueAnimator?.addUpdateListener {
@@ -85,5 +87,13 @@ class RubberSeekBar : View {
             return true
         }
         return super.onTouchEvent(event)
+    }
+
+    private fun Float.coerceHorizontal(): Float {
+        return this.coerceAtMost(width.toFloat()).coerceAtLeast(0f)
+    }
+
+    private fun Float.coerceVertical(): Float {
+        return this.coerceAtMost(height.toFloat()).coerceAtLeast(0f)
     }
 }
