@@ -7,6 +7,7 @@ import android.graphics.Path
 import android.util.AttributeSet
 import android.animation.ValueAnimator
 import android.graphics.Color
+import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.View
 
@@ -25,10 +26,12 @@ class RubberSeekBar : View {
     private var controlX: Float = width.toFloat()/2
     private var controlY: Float = height.toFloat()/2
 
-    private var x1 = 0f
-    private var y1 = 0f
-    private var x2 = 0f
-    private var y2 = 0f
+    private var x1: Float = 0f
+    private var y1: Float = 0f
+    private var x2: Float = 0f
+    private var y2: Float = 0f
+
+    private var stretchRange: Float = 50f
 
     private var elasticBehavior: ElasticBehavior = ElasticBehavior.cubic
 
@@ -38,6 +41,15 @@ class RubberSeekBar : View {
             super(context, attrs)
     constructor(context: Context) :
             super(context)
+
+    override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
+        super.onLayout(changed, left, top, right, bottom)
+        stretchRange = TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP,
+            16F,
+            context.resources.displayMetrics
+        ).coerceAtMost(height.toFloat()/2)
+    }
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
@@ -72,13 +84,15 @@ class RubberSeekBar : View {
         }
         if (event.action == MotionEvent.ACTION_DOWN || event.action == MotionEvent.ACTION_MOVE) {
             controlX = event.x.coerceHorizontal()
-            controlY = event.y.coerceVertical()
+            controlY = event.y.coerceVertical().coerceToStretchRange(controlX)
             invalidate()
             return true
         } else if (event.action == MotionEvent.ACTION_UP || event.action == MotionEvent.ACTION_CANCEL){
+            controlX = event.x.coerceHorizontal()
+            controlY = event.y.coerceVertical().coerceToStretchRange(controlX)
             valueAnimator?.cancel()
             valueAnimator = ValueAnimator.ofFloat(
-                event.y.coerceVertical(),
+                controlY,
                 height.toFloat()/2)
             valueAnimator?.interpolator = CustomBounceInterpolator(0.5, 30.0)
             valueAnimator?.addUpdateListener {
