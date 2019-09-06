@@ -103,17 +103,17 @@ class RubberSeekBar : View {
         return if (this<=height/2) {
             this.coerceAtLeast(
                 if (x <= width/2) {
-                    (((2*stretchRange - height)*(x))/width)+(height/2)
+                    -(((2*(stretchRange + height/2) - height)*(x))/width)+(height/2)
                 } else {
-                    (((2*stretchRange - height)*(width - x))/width)+(height/2)
+                    -(((2*(stretchRange + height/2) - height)*(width - x))/width)+(height/2)
                 }
             )
         } else {
             this.coerceAtMost(
                 if (x <= width/2) {
-                    -(((2*stretchRange - height)*(x))/width)+(height/2)
+                    (((2*(stretchRange + height/2) - height)*(x))/width)+(height/2)
                 } else {
-                    -(((2*stretchRange - height)*(width - x))/width)+(height/2)
+                    (((2*(stretchRange + height/2) - height)*(width - x))/width)+(height/2)
                 }
             )
         }
