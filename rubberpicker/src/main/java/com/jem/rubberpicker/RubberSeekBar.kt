@@ -146,4 +146,25 @@ class RubberSeekBar : View {
             )
         }
     }
+
+    //region Public functions
+    /**
+     * Set the Elastic Behavior for the SeekBar.
+     */
+    fun setElasticBehavior(elasticBehavior: ElasticBehavior) {
+        this.elasticBehavior = elasticBehavior
+    }
+
+    /**
+     * Set the maximum Stretch Range in dp
+     */
+    fun setStretchRange(stretchRangeInDp: Float) {
+        this.stretchRange = TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP,
+            stretchRangeInDp,
+            context.resources.displayMetrics
+        ).coerceAtMost(height.toFloat()/2)
+    }
+    //endregion
+
 }
