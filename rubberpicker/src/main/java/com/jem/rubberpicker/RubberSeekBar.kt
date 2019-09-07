@@ -14,7 +14,12 @@ import kotlin.math.absoluteValue
 class RubberSeekBar : View {
 
     companion object {
-        private val drawableThumbRadius: Float = 60f
+        private const val drawableThumbRadius: Float = 50f
+        private const val normalTrackWidth: Float = 5f
+        private const val highlightTrackWidth: Float = 10f
+
+        private const val normalTrackColor: Int = Color.GRAY
+        private const val highlightTrackColor: Int = 0xFF38ACEC.toInt()
     }
 
     private val paint: Paint by lazy {
