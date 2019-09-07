@@ -32,8 +32,10 @@ class RubberSeekBar : View {
     }
     private var path: Path = Path()
     private var valueAnimator: ValueAnimator? = null
-    private var controlX: Float = width.toFloat()/2
-    private var controlY: Float = height.toFloat()/2
+    private var controlX: Float = width.toFloat() / 2
+    private var controlY: Float = height.toFloat() / 2
+    // Used to determine the start and end points of the track.
+    // Useful for drawing and also for other calculations.
     private val trackStartX: Float
         get() {
             return if (drawableThumb != null) {
@@ -54,7 +56,7 @@ class RubberSeekBar : View {
         }
     private val trackY: Float
         get() {
-            return height.toFloat()/2
+            return height.toFloat() / 2
         }
 
     private var x1: Float = 0f
@@ -75,25 +77,27 @@ class RubberSeekBar : View {
 
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
             super(context, attrs, defStyleAttr)
+
     constructor(context: Context, attrs: AttributeSet?) :
             super(context, attrs)
+
     constructor(context: Context) :
             super(context)
 
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
         super.onLayout(changed, left, top, right, bottom)
-        if(controlX<trackStartX) {
+        if (controlX < trackStartX) {
             controlX = trackStartX
         }
         controlY = height.toFloat() / 2
-        if (stretchRange==-1f) {
+        if (stretchRange == -1f) {
             this.stretchRange = TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP,
                 16F,
                 context.resources.displayMetrics
             )
         }
-        this.stretchRange = this.stretchRange.coerceAtMost(height.toFloat()/2)
+        this.stretchRange = this.stretchRange.coerceAtMost(height.toFloat() / 2)
     }
 
     override fun onDraw(canvas: Canvas?) {
@@ -108,8 +112,10 @@ class RubberSeekBar : View {
         canvas?.clipRect(canvasRect, Region.Op.REPLACE)
         drawTrack(canvas)
         drawThumb(canvas)
-        //TODO - Use SpringAnimation & SpringForce instead of ValueAnimator
+        //TODO - Change clip range based on stretchRange
+        //TODO - override and define onMeasure so that wrap_content works as expected
         //TODO - Assign min, max values and get 'seekbar' values
+        //TODO - Consider using SpringAnimation & SpringForce instead of ValueAnimator?
         //TODO - Expand logic to RubberRangePicker
     }
 
@@ -134,7 +140,7 @@ class RubberSeekBar : View {
     }
 
     private fun drawTrack(canvas: Canvas?) {
-        if (controlY==trackY) {
+        if (controlY == trackY) {
             drawRigidTrack(canvas)
             return
         }
@@ -159,8 +165,8 @@ class RubberSeekBar : View {
     }
 
     private fun drawBezierTrack(canvas: Canvas?) {
-        x1 = (controlX)/2
-        y1 = height.toFloat()/2
+        x1 = (controlX) / 2
+        y1 = height.toFloat() / 2
         x2 = x1
         y2 = controlY
         path.cubicTo(x1, y1, x2, y2, controlX, controlY)
@@ -170,10 +176,10 @@ class RubberSeekBar : View {
 
         path.reset()
         path.moveTo(controlX, controlY)
-        x1 = (controlX + width.toFloat())/2
+        x1 = (controlX + width.toFloat()) / 2
         y1 = controlY
         x2 = x1
-        y2 = height.toFloat()/2
+        y2 = height.toFloat() / 2
         path.cubicTo(x1, y1, x2, y2, trackEndX, trackY)
         paint.color = normalTrackColor
         paint.strokeWidth = normalTrackWidth
@@ -188,7 +194,7 @@ class RubberSeekBar : View {
 
         paint.color = normalTrackColor
         paint.strokeWidth = normalTrackWidth
-        path.lineTo(width.toFloat(), height.toFloat()/2)
+        path.lineTo(width.toFloat(), height.toFloat() / 2)
         canvas?.drawPath(path, paint)
     }
 
@@ -200,7 +206,7 @@ class RubberSeekBar : View {
         val y = event.y
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
-                if (isTouchPointInDrawableThumb(x,y)) {
+                if (isTouchPointInDrawableThumb(x, y)) {
                     drawableThumbSelected = true
                     controlX = x.coerceHorizontal()
                     controlY = y.coerceVertical().coerceToStretchRange(controlX)
@@ -231,13 +237,14 @@ class RubberSeekBar : View {
                         controlY = it.animatedValue as Float
                         invalidate()
                     }
-                    valueAnimator?.addListener(object: Animator.AnimatorListener {
+                    valueAnimator?.addListener(object : Animator.AnimatorListener {
                         override fun onAnimationStart(animation: Animator?) {}
                         override fun onAnimationRepeat(animation: Animator?) {}
                         override fun onAnimationEnd(animation: Animator?) {
                             controlY = trackY
                             invalidate()
                         }
+
                         override fun onAnimationCancel(animation: Animator?) {
                             controlY = trackY
                             invalidate()
@@ -255,14 +262,16 @@ class RubberSeekBar : View {
         if (drawableThumb != null) {
             drawableThumb?.let {
                 setDrawableHalfWidthAndHeight()
-                if (x > controlX-drawableThumbHalfWidth && x < controlX+drawableThumbHalfWidth &&
-                    y > controlY-drawableThumbHalfHeight && x < controlY+drawableThumbHalfHeight) {
+                if (x > controlX - drawableThumbHalfWidth && x < controlX + drawableThumbHalfWidth &&
+                    y > controlY - drawableThumbHalfHeight && x < controlY + drawableThumbHalfHeight
+                ) {
                     return true
                 }
             }
         } else {
             if ((x - controlX) * (x - controlX) +
-                (y - controlY) * (y - controlY) <= drawableThumbRadius * drawableThumbRadius) {
+                (y - controlY) * (y - controlY) <= drawableThumbRadius * drawableThumbRadius
+            ) {
                 return true
             }
         }
@@ -270,7 +279,7 @@ class RubberSeekBar : View {
     }
 
     private fun setDrawableHalfWidthAndHeight() {
-        if (drawableThumbHalfWidth!=0 && drawableThumbHalfHeight!=0) {
+        if (drawableThumbHalfWidth != 0 && drawableThumbHalfHeight != 0) {
             return
         }
         drawableThumb?.let {
@@ -288,20 +297,20 @@ class RubberSeekBar : View {
     }
 
     private fun Float.coerceToStretchRange(x: Float): Float {
-        return if (this<=height/2) {
+        return if (this <= height / 2) {
             this.coerceAtLeast(
-                if (x <= width/2) {
-                    -(((2*(stretchRange + height/2) - height)*(x - trackStartX))/(width-(2*trackStartX)))+(height/2)
+                if (x <= width / 2) {
+                    -(((2 * (stretchRange + height / 2) - height) * (x - trackStartX)) / (width - (2 * trackStartX))) + (height / 2)
                 } else {
-                    -(((2*(stretchRange + height/2) - height)*(x - trackEndX))/(width-(2*trackEndX)))+(height/2)
+                    -(((2 * (stretchRange + height / 2) - height) * (x - trackEndX)) / (width - (2 * trackEndX))) + (height / 2)
                 }
             )
         } else {
             this.coerceAtMost(
-                if (x <= width/2) {
-                    (((2*(stretchRange + height/2) - height)*(x - trackStartX))/(width-(2*trackStartX)))+(height/2)
+                if (x <= width / 2) {
+                    (((2 * (stretchRange + height / 2) - height) * (x - trackStartX)) / (width - (2 * trackStartX))) + (height / 2)
                 } else {
-                    (((2*(stretchRange + height/2) - height)*(x - trackEndX))/(width-(2*trackEndX)))+(height/2)
+                    (((2 * (stretchRange + height / 2) - height) * (x - trackEndX)) / (width - (2 * trackEndX))) + (height / 2)
                 }
             )
         }
@@ -326,9 +335,10 @@ class RubberSeekBar : View {
         this.stretchRange = TypedValue.applyDimension(
             TypedValue.COMPLEX_UNIT_DIP,
             stretchRangeInDp,
-            context.resources.displayMetrics)
-        if (height!=0) {
-            this.stretchRange = this.stretchRange.coerceAtMost(height.toFloat()/2)
+            context.resources.displayMetrics
+        )
+        if (height != 0) {
+            this.stretchRange = this.stretchRange.coerceAtMost(height.toFloat() / 2)
         }
     }
     //endregion
