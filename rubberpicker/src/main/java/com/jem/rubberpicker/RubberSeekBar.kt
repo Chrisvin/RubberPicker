@@ -38,7 +38,7 @@ class RubberSeekBar : View {
         get() {
             return if (drawableThumb != null) {
                 setDrawableHalfWidthAndHeight()
-                drawableWidthBy2.toFloat()
+                drawableThumbHalfWidth.toFloat()
             } else {
                 drawableThumbRadius
             }
@@ -47,7 +47,7 @@ class RubberSeekBar : View {
         get() {
             return if (drawableThumb != null) {
                 setDrawableHalfWidthAndHeight()
-                width - drawableWidthBy2.toFloat()
+                width - drawableThumbHalfWidth.toFloat()
             } else {
                 width - drawableThumbRadius
             }
@@ -67,6 +67,8 @@ class RubberSeekBar : View {
     private var elasticBehavior: ElasticBehavior = ElasticBehavior.cubic
 
     private var drawableThumb: Drawable? = null
+    private var drawableThumbHalfWidth = 0
+    private var drawableThumbHalfHeight = 0
     private var drawableThumbSelected: Boolean = false
 
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
@@ -201,10 +203,9 @@ class RubberSeekBar : View {
     private fun isTouchPointInDrawableThumb(x: Float, y: Float): Boolean {
         if (drawableThumb != null) {
             drawableThumb?.let {
-                val drawableWidthBy2 = (it.bounds.right - it.bounds.left).absoluteValue / 2
-                val drawableHeightBy2 = (it.bounds.bottom - it.bounds.top).absoluteValue / 2
-                if (x > controlX-drawableWidthBy2 && x < controlX+drawableWidthBy2 &&
-                    y > controlY-drawableHeightBy2 && x < controlY+drawableHeightBy2) {
+                setDrawableHalfWidthAndHeight()
+                if (x > controlX-drawableThumbHalfWidth && x < controlX+drawableThumbHalfWidth &&
+                    y > controlY-drawableThumbHalfHeight && x < controlY+drawableThumbHalfHeight) {
                     return true
                 }
             }
@@ -215,6 +216,16 @@ class RubberSeekBar : View {
             }
         }
         return false
+    }
+
+    private fun setDrawableHalfWidthAndHeight() {
+        if (drawableThumbHalfWidth!=0 && drawableThumbHalfHeight!=0) {
+            return
+        }
+        drawableThumb?.let {
+            drawableThumbHalfWidth = (it.bounds.right - it.bounds.left).absoluteValue / 2
+            drawableThumbHalfHeight = (it.bounds.bottom - it.bounds.top).absoluteValue / 2
+        }
     }
 
     private fun Float.coerceHorizontal(): Float {
