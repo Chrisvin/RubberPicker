@@ -1,13 +1,10 @@
 package com.jem.rubberpicker
 
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Paint
-import android.graphics.Path
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.animation.ValueAnimator
-import android.graphics.Color
+import android.graphics.*
 import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.View
@@ -81,6 +78,9 @@ class RubberSeekBar : View {
 
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
         super.onLayout(changed, left, top, right, bottom)
+        if(controlX<trackStartX) {
+            controlX = trackStartX
+        }
         controlY = height.toFloat() / 2
         if (stretchRange==-1f) {
             this.stretchRange = TypedValue.applyDimension(
@@ -95,6 +95,7 @@ class RubberSeekBar : View {
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
         drawTrack(canvas)
+        drawThumb(canvas)
         //TODO - Use SpringAnimation & SpringForce instead of ValueAnimator
         //TODO - Assign min, max values and get 'seekbar' values
         //TODO - Expand logic to RubberRangePicker
@@ -120,7 +121,7 @@ class RubberSeekBar : View {
 
     private fun drawTrack(canvas: Canvas?) {
         path.reset()
-        path.moveTo(0f, height.toFloat()/2)
+        path.moveTo(trackStartX, trackY)
 
         when (elasticBehavior) {
             ElasticBehavior.linear -> drawLinearTrack(canvas)
@@ -139,7 +140,7 @@ class RubberSeekBar : View {
         y1 = controlY
         x2 = x1
         y2 = height.toFloat()/2
-        path.cubicTo(x1, y1, x2, y2, width.toFloat(), height.toFloat()/2)
+        path.cubicTo(x1, y1, x2, y2, trackEndX, trackY)
 
         canvas?.drawPath(path, paint)
     }
@@ -217,7 +218,7 @@ class RubberSeekBar : View {
     }
 
     private fun Float.coerceHorizontal(): Float {
-        return this.coerceAtMost(width.toFloat()).coerceAtLeast(0f)
+        return this.coerceAtMost(trackEndX).coerceAtLeast(trackStartX)
     }
 
     private fun Float.coerceVertical(): Float {
