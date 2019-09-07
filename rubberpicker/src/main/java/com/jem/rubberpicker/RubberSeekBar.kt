@@ -37,6 +37,28 @@ class RubberSeekBar : View {
     private var valueAnimator: ValueAnimator? = null
     private var controlX: Float = width.toFloat()/2
     private var controlY: Float = height.toFloat()/2
+    private val trackStartX: Float
+        get() {
+            return if (drawableThumb != null) {
+                setDrawableHalfWidthAndHeight()
+                drawableWidthBy2.toFloat()
+            } else {
+                drawableThumbRadius
+            }
+        }
+    private val trackEndX: Float
+        get() {
+            return if (drawableThumb != null) {
+                setDrawableHalfWidthAndHeight()
+                width - drawableWidthBy2.toFloat()
+            } else {
+                width - drawableThumbRadius
+            }
+        }
+    private val trackY: Float
+        get() {
+            return height.toFloat()/2
+        }
 
     private var x1: Float = 0f
     private var y1: Float = 0f
@@ -206,17 +228,17 @@ class RubberSeekBar : View {
         return if (this<=height/2) {
             this.coerceAtLeast(
                 if (x <= width/2) {
-                    -(((2*(stretchRange + height/2) - height)*(x))/width)+(height/2)
+                    -(((2*(stretchRange + height/2) - height)*(x - trackStartX))/(width-(2*trackStartX)))+(height/2)
                 } else {
-                    -(((2*(stretchRange + height/2) - height)*(width - x))/width)+(height/2)
+                    -(((2*(stretchRange + height/2) - height)*(x - trackEndX))/(width-(2*trackEndX)))+(height/2)
                 }
             )
         } else {
             this.coerceAtMost(
                 if (x <= width/2) {
-                    (((2*(stretchRange + height/2) - height)*(x))/width)+(height/2)
+                    (((2*(stretchRange + height/2) - height)*(x - trackStartX))/(width-(2*trackStartX)))+(height/2)
                 } else {
-                    (((2*(stretchRange + height/2) - height)*(width - x))/width)+(height/2)
+                    (((2*(stretchRange + height/2) - height)*(x - trackEndX))/(width-(2*trackEndX)))+(height/2)
                 }
             )
         }
