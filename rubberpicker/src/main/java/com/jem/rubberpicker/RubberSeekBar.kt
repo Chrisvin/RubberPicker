@@ -25,14 +25,8 @@ class RubberSeekBar : View {
     private val paint: Paint by lazy {
         val tempPaint = Paint()
         tempPaint.style = Paint.Style.STROKE
-        tempPaint.color = Color.GRAY
+        tempPaint.color = normalTrackColor
         tempPaint.strokeWidth = 5f
-        tempPaint
-    }
-    private val highlightPaint: Paint by lazy {
-        val tempPaint = Paint()
-        tempPaint.style = Paint.Style.FILL
-        tempPaint.color = Color.parseColor("#38ACEC")
         tempPaint
     }
     private var path: Path = Path()
@@ -115,14 +109,16 @@ class RubberSeekBar : View {
                 drawableThumb?.draw(it)
             }
         } else {
-            highlightPaint.color = 0xFF38ACEC.toInt()
-            canvas?.drawCircle(controlX, controlY, drawableThumbRadius, highlightPaint)
+            paint.color = highlightTrackColor
+            paint.style = Paint.Style.FILL
+            canvas?.drawCircle(controlX, controlY, drawableThumbRadius, paint)
             if (drawableThumbSelected) {
-                highlightPaint.color = 0xFF82CAFA.toInt()
+                paint.color = 0xFF82CAFA.toInt()
             } else {
-                highlightPaint.color = Color.WHITE
+                paint.color = Color.WHITE
             }
-            canvas?.drawCircle(controlX, controlY, drawableThumbRadius - 5f, highlightPaint)
+            canvas?.drawCircle(controlX, controlY, drawableThumbRadius - highlightTrackWidth, paint)
+            paint.style = Paint.Style.STROKE
         }
     }
 
@@ -142,18 +138,30 @@ class RubberSeekBar : View {
         x2 = x1
         y2 = controlY
         path.cubicTo(x1, y1, x2, y2, controlX, controlY)
+        paint.color = highlightTrackColor
+        paint.strokeWidth = highlightTrackWidth
+        canvas?.drawPath(path, paint)
 
+        path.reset()
+        path.moveTo(controlX, controlY)
         x1 = (controlX + width.toFloat())/2
         y1 = controlY
         x2 = x1
         y2 = height.toFloat()/2
         path.cubicTo(x1, y1, x2, y2, trackEndX, trackY)
-
+        paint.color = normalTrackColor
+        paint.strokeWidth = normalTrackWidth
         canvas?.drawPath(path, paint)
     }
 
     private fun drawLinearTrack(canvas: Canvas?) {
+        paint.color = highlightTrackColor
+        paint.strokeWidth = highlightTrackWidth
         path.lineTo(controlX, controlY)
+        canvas?.drawPath(path, paint)
+
+        paint.color = normalTrackColor
+        paint.strokeWidth = normalTrackWidth
         path.lineTo(width.toFloat(), height.toFloat()/2)
         canvas?.drawPath(path, paint)
     }
