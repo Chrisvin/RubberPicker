@@ -132,6 +132,15 @@ class RubberSeekBar : View {
         }
     }
 
+    private fun drawRigidTrack(canvas: Canvas?) {
+        paint.color = highlightTrackColor
+        paint.strokeWidth = highlightTrackWidth
+        canvas?.drawLine(trackStartX, trackY, controlX, controlY, paint)
+        paint.color = normalTrackColor
+        paint.strokeWidth = normalTrackWidth
+        canvas?.drawLine(controlX, controlY, trackEndX, trackY, paint)
+    }
+
     private fun drawBezierTrack(canvas: Canvas?) {
         x1 = (controlX)/2
         y1 = height.toFloat()/2
