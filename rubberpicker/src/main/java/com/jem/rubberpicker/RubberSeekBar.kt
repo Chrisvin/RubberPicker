@@ -62,6 +62,8 @@ class RubberSeekBar : View {
     private var x2: Float = 0f
     private var y2: Float = 0f
 
+    private val canvasRect = Rect()
+
     private var stretchRange: Float = -1f
 
     private var elasticBehavior: ElasticBehavior = ElasticBehavior.CUBIC
@@ -96,6 +98,14 @@ class RubberSeekBar : View {
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
+        canvas?.getClipBounds(canvasRect)
+        if (drawableThumb != null) {
+            setDrawableHalfWidthAndHeight()
+            canvasRect.inset(0, -drawableThumbHalfHeight)
+        } else {
+            canvasRect.inset(0, -(drawableThumbRadius.toInt()))
+        }
+        canvas?.clipRect(canvasRect, Region.Op.REPLACE)
         drawTrack(canvas)
         drawThumb(canvas)
         //TODO - Use SpringAnimation & SpringForce instead of ValueAnimator
