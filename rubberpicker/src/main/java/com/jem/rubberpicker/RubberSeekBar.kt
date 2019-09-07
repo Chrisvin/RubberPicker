@@ -1,5 +1,6 @@
 package com.jem.rubberpicker
 
+import android.animation.Animator
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
@@ -63,7 +64,7 @@ class RubberSeekBar : View {
 
     private var stretchRange: Float = -1f
 
-    private var elasticBehavior: ElasticBehavior = ElasticBehavior.cubic
+    private var elasticBehavior: ElasticBehavior = ElasticBehavior.CUBIC
 
     private var drawableThumb: Drawable? = null
     private var drawableThumbHalfWidth = 0
@@ -132,8 +133,9 @@ class RubberSeekBar : View {
         path.moveTo(trackStartX, trackY)
 
         when (elasticBehavior) {
-            ElasticBehavior.linear -> drawLinearTrack(canvas)
-            ElasticBehavior.cubic -> drawBezierTrack(canvas)
+            ElasticBehavior.LINEAR -> drawLinearTrack(canvas)
+            ElasticBehavior.CUBIC -> drawBezierTrack(canvas)
+            ElasticBehavior.RIGID -> drawRigidTrack(canvas)
         }
     }
 

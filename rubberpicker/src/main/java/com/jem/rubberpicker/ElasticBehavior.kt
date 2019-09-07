@@ -1,5 +1,5 @@
 package com.jem.rubberpicker
 
 enum class ElasticBehavior {
-    linear, cubic
+    LINEAR, CUBIC, RIGID
 }
