@@ -123,6 +123,11 @@ class RubberSeekBar : View {
     }
 
     private fun drawTrack(canvas: Canvas?) {
+        if (controlY==trackY) {
+            drawRigidTrack(canvas)
+            return
+        }
+
         path.reset()
         path.moveTo(trackStartX, trackY)
 
@@ -207,13 +212,25 @@ class RubberSeekBar : View {
                     valueAnimator?.cancel()
                     valueAnimator = ValueAnimator.ofFloat(
                         controlY,
-                        height.toFloat() / 2
+                        trackY
                     )
                     valueAnimator?.interpolator = CustomBounceInterpolator(0.5, 30.0)
                     valueAnimator?.addUpdateListener {
                         controlY = it.animatedValue as Float
                         invalidate()
                     }
+                    valueAnimator?.addListener(object: Animator.AnimatorListener {
+                        override fun onAnimationStart(animation: Animator?) {}
+                        override fun onAnimationRepeat(animation: Animator?) {}
+                        override fun onAnimationEnd(animation: Animator?) {
+                            controlY = trackY
+                            invalidate()
+                        }
+                        override fun onAnimationCancel(animation: Animator?) {
+                            controlY = trackY
+                            invalidate()
+                        }
+                    })
                     valueAnimator?.start()
                     return true
                 }
