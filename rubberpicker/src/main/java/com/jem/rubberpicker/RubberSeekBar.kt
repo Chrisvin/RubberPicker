@@ -4,21 +4,33 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Path
+import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.animation.ValueAnimator
 import android.graphics.Color
 import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.View
+import kotlin.math.absoluteValue
 
 
 class RubberSeekBar : View {
+
+    companion object {
+        private val drawableThumbRadius: Float = 60f
+    }
 
     private val paint: Paint by lazy {
         val tempPaint = Paint()
         tempPaint.style = Paint.Style.STROKE
         tempPaint.color = Color.GRAY
         tempPaint.strokeWidth = 5f
+        tempPaint
+    }
+    private val highlightPaint: Paint by lazy {
+        val tempPaint = Paint()
+        tempPaint.style = Paint.Style.FILL
+        tempPaint.color = Color.parseColor("#38ACEC")
         tempPaint
     }
     private var path: Path = Path()
@@ -35,6 +47,9 @@ class RubberSeekBar : View {
 
     private var elasticBehavior: ElasticBehavior = ElasticBehavior.cubic
 
+    private var drawableThumb: Drawable? = null
+    private var drawableThumbSelected: Boolean = false
+
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
             super(context, attrs, defStyleAttr)
     constructor(context: Context, attrs: AttributeSet?) :
@@ -44,6 +59,7 @@ class RubberSeekBar : View {
 
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
         super.onLayout(changed, left, top, right, bottom)
+        controlY = height.toFloat() / 2
         if (stretchRange==-1f) {
             this.stretchRange = TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP,
@@ -57,10 +73,27 @@ class RubberSeekBar : View {
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
         drawTrack(canvas)
-        //TODO - Add drawable function
         //TODO - Use SpringAnimation & SpringForce instead of ValueAnimator
         //TODO - Assign min, max values and get 'seekbar' values
         //TODO - Expand logic to RubberRangePicker
+    }
+
+    private fun drawThumb(canvas: Canvas?) {
+        if (drawableThumb != null) {
+            canvas?.let {
+                canvas.translate(controlX, controlY)
+                drawableThumb?.draw(it)
+            }
+        } else {
+            highlightPaint.color = 0xFF38ACEC.toInt()
+            canvas?.drawCircle(controlX, controlY, drawableThumbRadius, highlightPaint)
+            if (drawableThumbSelected) {
+                highlightPaint.color = 0xFF82CAFA.toInt()
+            } else {
+                highlightPaint.color = Color.WHITE
+            }
+            canvas?.drawCircle(controlX, controlY, drawableThumbRadius - 5f, highlightPaint)
+        }
     }
 
     private fun drawTrack(canvas: Canvas?) {
@@ -99,27 +132,66 @@ class RubberSeekBar : View {
         if (event == null) {
             return super.onTouchEvent(event)
         }
-        if (event.action == MotionEvent.ACTION_DOWN || event.action == MotionEvent.ACTION_MOVE) {
-            controlX = event.x.coerceHorizontal()
-            controlY = event.y.coerceVertical().coerceToStretchRange(controlX)
-            invalidate()
-            return true
-        } else if (event.action == MotionEvent.ACTION_UP || event.action == MotionEvent.ACTION_CANCEL){
-            controlX = event.x.coerceHorizontal()
-            controlY = event.y.coerceVertical().coerceToStretchRange(controlX)
-            valueAnimator?.cancel()
-            valueAnimator = ValueAnimator.ofFloat(
-                controlY,
-                height.toFloat()/2)
-            valueAnimator?.interpolator = CustomBounceInterpolator(0.5, 30.0)
-            valueAnimator?.addUpdateListener {
-                controlY = it.animatedValue as Float
-                invalidate()
+        val x = event.x
+        val y = event.y
+        when (event.action) {
+            MotionEvent.ACTION_DOWN -> {
+                if (isTouchPointInDrawableThumb(x,y)) {
+                    drawableThumbSelected = true
+                    controlX = x.coerceHorizontal()
+                    controlY = y.coerceVertical().coerceToStretchRange(controlX)
+                    invalidate()
+                    return true
+                }
             }
-            valueAnimator?.start()
-            return true
+            MotionEvent.ACTION_MOVE -> {
+                if (drawableThumbSelected) {
+                    controlX = x.coerceHorizontal()
+                    controlY = y.coerceVertical().coerceToStretchRange(controlX)
+                    invalidate()
+                    return true
+                }
+            }
+            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                if (drawableThumbSelected) {
+                    drawableThumbSelected = false
+                    controlX = x.coerceHorizontal()
+                    controlY = y.coerceVertical().coerceToStretchRange(controlX)
+                    valueAnimator?.cancel()
+                    valueAnimator = ValueAnimator.ofFloat(
+                        controlY,
+                        height.toFloat() / 2
+                    )
+                    valueAnimator?.interpolator = CustomBounceInterpolator(0.5, 30.0)
+                    valueAnimator?.addUpdateListener {
+                        controlY = it.animatedValue as Float
+                        invalidate()
+                    }
+                    valueAnimator?.start()
+                    return true
+                }
+            }
         }
         return super.onTouchEvent(event)
+    }
+
+    private fun isTouchPointInDrawableThumb(x: Float, y: Float): Boolean {
+        if (drawableThumb != null) {
+            drawableThumb?.let {
+                val drawableWidthBy2 = (it.bounds.right - it.bounds.left).absoluteValue / 2
+                val drawableHeightBy2 = (it.bounds.bottom - it.bounds.top).absoluteValue / 2
+                if (x > controlX-drawableWidthBy2 && x < controlX+drawableWidthBy2 &&
+                    y > controlY-drawableHeightBy2 && x < controlY+drawableHeightBy2) {
+                    return true
+                }
+            }
+        } else {
+            if ((x - controlX) * (x - controlX) +
+                (y - controlY) * (y - controlY) <= drawableThumbRadius * drawableThumbRadius) {
+                return true
+            }
+        }
+        return false
     }
 
     private fun Float.coerceHorizontal(): Float {
