@@ -31,7 +31,7 @@ class RubberSeekBar : View {
     private var x2: Float = 0f
     private var y2: Float = 0f
 
-    private var stretchRange: Float = 50f
+    private var stretchRange: Float = -1f
 
     private var elasticBehavior: ElasticBehavior = ElasticBehavior.cubic
 
@@ -44,11 +44,14 @@ class RubberSeekBar : View {
 
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
         super.onLayout(changed, left, top, right, bottom)
-        stretchRange = TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_DIP,
-            16F,
-            context.resources.displayMetrics
-        ).coerceAtMost(height.toFloat()/2)
+        if (stretchRange==-1f) {
+            this.stretchRange = TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                16F,
+                context.resources.displayMetrics
+            )
+        }
+        this.stretchRange = this.stretchRange.coerceAtMost(height.toFloat()/2)
     }
 
     override fun onDraw(canvas: Canvas?) {
@@ -156,14 +159,20 @@ class RubberSeekBar : View {
     }
 
     /**
-     * Set the maximum Stretch Range in dp
+     * Set the maximum Stretch Range in dp.
      */
+    @Throws(IllegalArgumentException::class)
     fun setStretchRange(stretchRangeInDp: Float) {
+        if (stretchRangeInDp < 0) {
+            throw IllegalArgumentException("Stretch range value can not be negative")
+        }
         this.stretchRange = TypedValue.applyDimension(
             TypedValue.COMPLEX_UNIT_DIP,
             stretchRangeInDp,
-            context.resources.displayMetrics
-        ).coerceAtMost(height.toFloat()/2)
+            context.resources.displayMetrics)
+        if (height!=0) {
+            this.stretchRange = this.stretchRange.coerceAtMost(height.toFloat()/2)
+        }
     }
     //endregion
 
