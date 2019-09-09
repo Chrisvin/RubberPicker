@@ -99,7 +99,6 @@ class RubberSeekBar : View {
                 context.resources.displayMetrics
             )
         }
-        this.stretchRange = this.stretchRange.coerceAtMost(height.toFloat() / 2)
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -208,7 +207,7 @@ class RubberSeekBar : View {
     }
 
     private fun drawBezierTrack(canvas: Canvas?) {
-        x1 = (controlX) / 2
+        x1 = (controlX+trackStartX) / 2
         y1 = height.toFloat() / 2
         x2 = x1
         y2 = controlY
@@ -219,7 +218,7 @@ class RubberSeekBar : View {
 
         path.reset()
         path.moveTo(controlX, controlY)
-        x1 = (controlX + width.toFloat()) / 2
+        x1 = (controlX + trackEndX) / 2
         y1 = controlY
         x2 = x1
         y2 = height.toFloat() / 2
@@ -336,7 +335,7 @@ class RubberSeekBar : View {
     }
 
     private fun Float.coerceVertical(): Float {
-        return this.coerceAtMost(height.toFloat()).coerceAtLeast(0f)
+        return this.coerceAtMost(trackY + stretchRange).coerceAtLeast(trackY - stretchRange)
     }
 
     private fun Float.coerceToStretchRange(x: Float): Float {
@@ -380,9 +379,6 @@ class RubberSeekBar : View {
             stretchRangeInDp,
             context.resources.displayMetrics
         )
-        if (height != 0) {
-            this.stretchRange = this.stretchRange.coerceAtMost(height.toFloat() / 2)
-        }
     }
     //endregion
 
