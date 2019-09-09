@@ -79,6 +79,11 @@ class RubberSeekBar : View {
     private var drawableThumbHalfHeight = 0
     private var drawableThumbSelected: Boolean = false
 
+    private var minValue: Int = 0
+    private var maxValue: Int = 100
+
+    private var onChangeListener: OnRubberSeekBarChangeListener? = null
+
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
             super(context, attrs, defStyleAttr)
 
@@ -253,6 +258,7 @@ class RubberSeekBar : View {
                     drawableThumbSelected = true
                     controlX = x.coerceHorizontal()
                     controlY = y.coerceVertical().coerceToStretchRange(controlX)
+                    onChangeListener?.onStartTrackingTouch(this)
                     invalidate()
                     return true
                 }
@@ -261,6 +267,7 @@ class RubberSeekBar : View {
                 if (drawableThumbSelected) {
                     controlX = x.coerceHorizontal()
                     controlY = y.coerceVertical().coerceToStretchRange(controlX)
+                    onChangeListener?.onProgressChanged(this, getCurrentValue(), true)
                     invalidate()
                     return true
                 }
@@ -270,6 +277,7 @@ class RubberSeekBar : View {
                     drawableThumbSelected = false
                     controlX = x.coerceHorizontal()
                     controlY = y.coerceVertical().coerceToStretchRange(controlX)
+                    onChangeListener?.onStopTrackingTouch(this)
                     valueAnimator?.cancel()
                     valueAnimator = ValueAnimator.ofFloat(
                         controlY,
@@ -382,6 +390,14 @@ class RubberSeekBar : View {
         )
     }
 
+    fun setMin(value: Int) {
+        minValue = value
+    }
+
+    fun setMax(value: Int) {
+        maxValue = value
+    }
+
     fun getCurrentValue(): Int {
         if(controlX <= trackStartX) {
             return minValue
@@ -398,8 +414,25 @@ class RubberSeekBar : View {
             return
         }
         controlX = ((value).toFloat()/(maxValue - minValue)) * (trackEndX - trackStartX)
+        onChangeListener?.onProgressChanged(this, value, false)
         invalidate()
+    }
+
+    fun setOnRubberSeekBarChangeListener(listener: OnRubberSeekBarChangeListener) {
+        onChangeListener = listener
     }
     //endregion
 
+    // TODO - Fill out the necessary comments and descriptions
+
+    //region Interfaces
+    /**
+     * Based on the SeekBar.onSeekBarChangeListener
+     */
+    interface OnRubberSeekBarChangeListener {
+        fun onProgressChanged(seekBar: RubberSeekBar, progress: Int, fromUser: Boolean)
+        fun onStartTrackingTouch(seekBar: RubberSeekBar)
+        fun onStopTrackingTouch(seekBar: RubberSeekBar)
+    }
+    //endregion
 }
