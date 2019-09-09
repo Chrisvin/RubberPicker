@@ -100,6 +100,37 @@ class RubberSeekBar : View {
         this.stretchRange = this.stretchRange.coerceAtMost(height.toFloat() / 2)
     }
 
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        val minimumHeight: Int = if (drawableThumb != null) {
+            setDrawableHalfWidthAndHeight()
+            drawableThumbHalfHeight*2
+        } else {
+            (drawableThumbRadius*2).toInt()
+        }
+        setMeasuredDimension(
+            getDefaultSize(suggestedMinimumWidth, widthMeasureSpec),
+            measureDimension(minimumHeight + paddingTop + paddingBottom, heightMeasureSpec)
+        )
+    }
+
+    private fun measureDimension(desiredSize: Int, measureSpec: Int): Int {
+        var result: Int
+        val specMode = MeasureSpec.getMode(measureSpec)
+        val specSize = MeasureSpec.getSize(measureSpec)
+
+        if (specMode == MeasureSpec.EXACTLY) {
+            result = specSize
+        } else {
+            result = desiredSize
+            if (specMode == MeasureSpec.AT_MOST) {
+                result = Math.min(result, specSize)
+            }
+        }
+
+        return result
+    }
+
+
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
         canvas?.getClipBounds(canvasRect)
