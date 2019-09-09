@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="RubberSeekBar">
+        <attr name="stretchRange" format="dimension" />
+        <attr name="elasticBehavior" format="enum">
+            <enum name="linear" value="0"/>
+            <enum name="cubic" value="1"/>
+            <enum name="rigid" value="2"/>
+        </attr>
+        <attr name="thumbDrawable" format="reference" />
+        <attr name="defaultThumbRadius" format="dimension" />
+        <attr name="normalTrackWidth" format="dimension" />
+        <attr name="highlightTrackWidth" format="dimension" />
+        <attr name="normalTrackColor" format="color" />
+        <attr name="highlightTrackColor" format="color"/>
+        <attr name="highlightDefaultThumbOnTouchColor" format="color"/>
+        <attr name="dampingRatio" format="float"/>
+        <attr name="stiffness" format="float"/>
+        <attr name="minValue" format="integer"/>
+        <attr name="maxValue" format="integer"/>
+    </declare-styleable>
+</resources>

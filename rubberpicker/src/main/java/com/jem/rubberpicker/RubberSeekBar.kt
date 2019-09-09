@@ -6,6 +6,9 @@ import android.content.Context
 import android.graphics.*
 import android.graphics.drawable.Drawable
 import android.os.Build
+import android.support.animation.FloatValueHolder
+import android.support.animation.SpringAnimation
+import android.support.animation.SpringForce
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.MotionEvent
@@ -17,15 +20,6 @@ import kotlin.math.absoluteValue
 
 class RubberSeekBar : View {
 
-    companion object {
-        private const val drawableThumbRadius: Float = 50f
-        private const val normalTrackWidth: Float = 5f
-        private const val highlightTrackWidth: Float = 10f
-
-        private const val normalTrackColor: Int = Color.GRAY
-        private const val highlightTrackColor: Int = 0xFF38ACEC.toInt()
-    }
-
     private val paint: Paint by lazy {
         val tempPaint = Paint()
         tempPaint.style = Paint.Style.STROKE
@@ -34,7 +28,7 @@ class RubberSeekBar : View {
         tempPaint
     }
     private var path: Path = Path()
-    private var valueAnimator: ValueAnimator? = null
+    private var springAnimation: SpringAnimation? = null
     private var controlX: Float = -1f
     private var controlY: Float = -1f
     private val initialControlXPositionQueue = ArrayBlockingQueue<Int>(1)
@@ -79,19 +73,76 @@ class RubberSeekBar : View {
     private var drawableThumbHalfHeight = 0
     private var drawableThumbSelected: Boolean = false
 
+    private var drawableThumbRadius: Float = 0.0f
+    private var normalTrackWidth: Float = 0.0f
+    private var highlightTrackWidth: Float = 0.0f
+
+    private var normalTrackColor: Int = 0
+    private var highlightTrackColor: Int = 0
+    private var highlightThumbOnTouchColor: Int = 0
+    private var dampingRatio: Float = 0f
+    private var stiffness: Float = 0f
+
     private var minValue: Int = 0
     private var maxValue: Int = 100
 
     private var onChangeListener: OnRubberSeekBarChangeListener? = null
 
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
-            super(context, attrs, defStyleAttr)
+            super(context, attrs, defStyleAttr) {
+        init(attrs)
+    }
 
     constructor(context: Context, attrs: AttributeSet?) :
-            super(context, attrs)
+            super(context, attrs) {
+        init(attrs)
+    }
 
     constructor(context: Context) :
-            super(context)
+            super(context) {
+        init(null)
+    }
+
+    private fun init(attrs: AttributeSet?) {
+        stretchRange = convertDpToPx(24f)
+        drawableThumbRadius = convertDpToPx(16f)
+        normalTrackWidth = convertDpToPx(2f)
+        highlightTrackWidth = convertDpToPx(4f)
+        normalTrackColor = Color.GRAY
+        highlightTrackColor = 0xFF38ACEC.toInt()
+        highlightThumbOnTouchColor = 0xFF82CAFA.toInt()
+        dampingRatio = SpringForce.DAMPING_RATIO_HIGH_BOUNCY
+        stiffness = SpringForce.STIFFNESS_LOW
+
+        attrs?.let {
+            val typedArray = context.obtainStyledAttributes(attrs, R.styleable.RubberSeekBar, 0, 0)
+            stretchRange = typedArray.getDimensionPixelSize(R.styleable.RubberSeekBar_stretchRange,
+                convertDpToPx(24f).toInt()).toFloat()
+            drawableThumbRadius = typedArray.getDimensionPixelSize(R.styleable.RubberSeekBar_defaultThumbRadius,
+                convertDpToPx(16f).toInt()).toFloat()
+            normalTrackWidth = typedArray.getDimensionPixelSize(R.styleable.RubberSeekBar_normalTrackWidth,
+                convertDpToPx(2f).toInt()).toFloat()
+            highlightTrackWidth = typedArray.getDimensionPixelSize(R.styleable.RubberSeekBar_highlightTrackWidth,
+                convertDpToPx(4f).toInt()).toFloat()
+            drawableThumb = typedArray.getDrawable(R.styleable.RubberSeekBar_thumbDrawable)
+            normalTrackColor = typedArray.getColor(R.styleable.RubberSeekBar_normalTrackColor, Color.GRAY)
+            highlightTrackColor = typedArray.getColor(R.styleable.RubberSeekBar_highlightTrackColor, 0xFF38ACEC.toInt())
+            highlightThumbOnTouchColor = typedArray.getColor(R.styleable.RubberSeekBar_highlightDefaultThumbOnTouchColor, 0xFF82CAFA.toInt())
+            dampingRatio = typedArray.getFloat(R.styleable.RubberSeekBar_dampingRatio, SpringForce.DAMPING_RATIO_HIGH_BOUNCY)
+            stiffness = typedArray.getFloat(R.styleable.RubberSeekBar_stiffness, SpringForce.STIFFNESS_LOW)
+            minValue = typedArray.getInt(R.styleable.RubberSeekBar_minValue, 0)
+            maxValue = typedArray.getInt(R.styleable.RubberSeekBar_maxValue, 100)
+            elasticBehavior = typedArray.getInt(R.styleable.RubberSeekBar_elasticBehavior, 0).run {
+                when (this) {
+                    0 -> ElasticBehavior.LINEAR
+                    1 -> ElasticBehavior.CUBIC
+                    2 -> ElasticBehavior.RIGID
+                    else -> ElasticBehavior.CUBIC
+                }
+            }
+            typedArray.recycle()
+        }
+    }
 
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
         super.onLayout(changed, left, top, right, bottom)
@@ -102,13 +153,6 @@ class RubberSeekBar : View {
                 setCurrentValue(initialControlXPositionQueue.poll())
             }
             controlY = trackY
-        }
-        if (stretchRange == -1f) {
-            this.stretchRange = TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP,
-                16F,
-                context.resources.displayMetrics
-            )
         }
     }
 
@@ -162,8 +206,6 @@ class RubberSeekBar : View {
         }
         drawTrack(canvas)
         drawThumb(canvas)
-        //TODO - Determine default values for all the attributes, use dp to ensure similar sizing in all devices
-        //TODO - Consider using SpringAnimation & SpringForce instead of ValueAnimator?
         //TODO - Expand logic to RubberRangePicker
     }
 
@@ -178,7 +220,7 @@ class RubberSeekBar : View {
             paint.style = Paint.Style.FILL
             canvas?.drawCircle(controlX, controlY, drawableThumbRadius, paint)
             if (drawableThumbSelected) {
-                paint.color = 0xFF82CAFA.toInt()
+                paint.color = highlightThumbOnTouchColor
             } else {
                 paint.color = Color.WHITE
             }
@@ -240,6 +282,8 @@ class RubberSeekBar : View {
         path.lineTo(controlX, controlY)
         canvas?.drawPath(path, paint)
 
+        path.reset()
+        path.moveTo(controlX, controlY)
         paint.color = normalTrackColor
         paint.strokeWidth = normalTrackWidth
         path.lineTo(width.toFloat(), height.toFloat() / 2)
@@ -255,6 +299,7 @@ class RubberSeekBar : View {
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
                 if (isTouchPointInDrawableThumb(x, y)) {
+                    springAnimation?.cancel()
                     drawableThumbSelected = true
                     controlX = x.coerceHorizontal()
                     controlY = y.coerceVertical().coerceToStretchRange(controlX)
@@ -278,30 +323,21 @@ class RubberSeekBar : View {
                     controlX = x.coerceHorizontal()
                     controlY = y.coerceVertical().coerceToStretchRange(controlX)
                     onChangeListener?.onStopTrackingTouch(this)
-                    valueAnimator?.cancel()
-                    valueAnimator = ValueAnimator.ofFloat(
-                        controlY,
-                        trackY
-                    )
-                    valueAnimator?.interpolator = CustomBounceInterpolator(0.5, 30.0)
-                    valueAnimator?.addUpdateListener {
-                        controlY = it.animatedValue as Float
-                        invalidate()
-                    }
-                    valueAnimator?.addListener(object : Animator.AnimatorListener {
-                        override fun onAnimationStart(animation: Animator?) {}
-                        override fun onAnimationRepeat(animation: Animator?) {}
-                        override fun onAnimationEnd(animation: Animator?) {
-                            controlY = trackY
-                            invalidate()
-                        }
-
-                        override fun onAnimationCancel(animation: Animator?) {
-                            controlY = trackY
-                            invalidate()
-                        }
-                    })
-                    valueAnimator?.start()
+                    springAnimation =
+                        SpringAnimation(FloatValueHolder(trackY))
+                            .setStartValue(controlY)
+                            .setSpring(SpringForce(trackY)
+                                .setDampingRatio(dampingRatio)
+                                .setStiffness(stiffness))
+                            .addUpdateListener { _, value, _ ->
+                                controlY = value
+                                invalidate()
+                            }
+                            .addEndListener { _, _, _, _ ->
+                                controlY = trackY
+                                invalidate()
+                            }
+                    springAnimation?.start()
                     return true
                 }
             }
@@ -339,6 +375,13 @@ class RubberSeekBar : View {
         }
     }
 
+    private fun convertDpToPx(dpValue: Float): Float {
+        return TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP,
+            dpValue,
+            context.resources.displayMetrics)
+    }
+
     private fun Float.coerceHorizontal(): Float {
         return this.coerceAtMost(trackEndX).coerceAtLeast(trackStartX)
     }
@@ -373,6 +416,7 @@ class RubberSeekBar : View {
      */
     fun setElasticBehavior(elasticBehavior: ElasticBehavior) {
         this.elasticBehavior = elasticBehavior
+        invalidate()
     }
 
     /**
@@ -383,11 +427,43 @@ class RubberSeekBar : View {
         if (stretchRangeInDp < 0) {
             throw IllegalArgumentException("Stretch range value can not be negative")
         }
-        this.stretchRange = TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_DIP,
-            stretchRangeInDp,
-            context.resources.displayMetrics
-        )
+        this.stretchRange = convertDpToPx(stretchRangeInDp)
+        invalidate()
+    }
+
+    fun setThumbRadius(dpValue: Float) {
+        drawableThumbRadius = convertDpToPx(dpValue)
+        invalidate()
+    }
+
+    fun setHighlightTrackWidth(dpValue: Float) {
+        highlightTrackWidth = convertDpToPx(dpValue)
+        invalidate()
+    }
+
+    fun setNormalTrackColor(value: Int) {
+        normalTrackColor = value
+        invalidate()
+    }
+
+    fun setHighlightTrackColor(value: Int) {
+        highlightTrackColor = value
+        invalidate()
+    }
+
+    fun setHighlightThumbOnTouchColor(value: Int) {
+        highlightThumbOnTouchColor = value
+        invalidate()
+    }
+
+    fun setDampingRatio(value: Float) {
+        dampingRatio = value
+        invalidate()
+    }
+
+    fun setStiffness(value: Float) {
+        stiffness = value
+        invalidate()
     }
 
     fun setMin(value: Int) {
