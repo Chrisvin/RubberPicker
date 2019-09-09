@@ -6,9 +6,11 @@ import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.animation.ValueAnimator
 import android.graphics.*
+import android.os.Build
 import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.View
+import android.view.ViewGroup
 import kotlin.math.absoluteValue
 
 
@@ -133,19 +135,29 @@ class RubberSeekBar : View {
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
-        canvas?.getClipBounds(canvasRect)
-        if (drawableThumb != null) {
-            setDrawableHalfWidthAndHeight()
-            canvasRect.inset(0, -drawableThumbHalfHeight)
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+            canvas?.getClipBounds(canvasRect)
+            if (drawableThumb != null) {
+                setDrawableHalfWidthAndHeight()
+                canvasRect.inset(0, -(drawableThumbHalfHeight + stretchRange.toInt()))
+            } else {
+                canvasRect.inset(0, -((drawableThumbRadius + stretchRange).toInt()))
+            }
+            canvas?.clipRect(canvasRect, Region.Op.REPLACE)
+            drawTrack(canvas)
+            drawThumb(canvas)
         } else {
-            canvasRect.inset(0, -(drawableThumbRadius.toInt()))
+            // TODO - Try to figure out a better way to overcome view clipping
+            // Workaround since Region.Op.REPLACE won't work in Android P & above
+            (parent as? ViewGroup)?.clipChildren = false
+            (parent as? ViewGroup)?.clipToPadding = false
+            drawTrack(canvas)
+            drawThumb(canvas)
         }
-        canvas?.clipRect(canvasRect, Region.Op.REPLACE)
-        drawTrack(canvas)
-        drawThumb(canvas)
         //TODO - Change clip range based on stretchRange
         //TODO - override and define onMeasure so that wrap_content works as expected
         //TODO - Assign min, max values and get 'seekbar' values
+        //TODO - Determine default values for all the attributes, use dp to ensure similar sizing in all devices
         //TODO - Consider using SpringAnimation & SpringForce instead of ValueAnimator?
         //TODO - Expand logic to RubberRangePicker
     }
