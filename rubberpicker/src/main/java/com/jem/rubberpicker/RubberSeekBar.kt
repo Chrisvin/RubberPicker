@@ -1,16 +1,17 @@
 package com.jem.rubberpicker
 
 import android.animation.Animator
-import android.content.Context
-import android.graphics.drawable.Drawable
-import android.util.AttributeSet
 import android.animation.ValueAnimator
+import android.content.Context
 import android.graphics.*
+import android.graphics.drawable.Drawable
 import android.os.Build
+import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import java.util.concurrent.ArrayBlockingQueue
 import kotlin.math.absoluteValue
 
 
@@ -34,8 +35,9 @@ class RubberSeekBar : View {
     }
     private var path: Path = Path()
     private var valueAnimator: ValueAnimator? = null
-    private var controlX: Float = width.toFloat() / 2
-    private var controlY: Float = height.toFloat() / 2
+    private var controlX: Float = -1f
+    private var controlY: Float = -1f
+    private val initialControlXPositionQueue = ArrayBlockingQueue<Int>(1)
     // Used to determine the start and end points of the track.
     // Useful for drawing and also for other calculations.
     private val trackStartX: Float
@@ -89,9 +91,13 @@ class RubberSeekBar : View {
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
         super.onLayout(changed, left, top, right, bottom)
         if (controlX < trackStartX) {
-            controlX = trackStartX
+            if (initialControlXPositionQueue.isEmpty()) {
+                controlX = trackStartX
+            } else {
+                setCurrentValue(initialControlXPositionQueue.poll())
+            }
+            controlY = trackY
         }
-        controlY = height.toFloat() / 2
         if (stretchRange == -1f) {
             this.stretchRange = TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP,
@@ -143,19 +149,14 @@ class RubberSeekBar : View {
                 canvasRect.inset(0, -((drawableThumbRadius + stretchRange).toInt()))
             }
             canvas?.clipRect(canvasRect, Region.Op.REPLACE)
-            drawTrack(canvas)
-            drawThumb(canvas)
         } else {
             // TODO - Try to figure out a better way to overcome view clipping
             // Workaround since Region.Op.REPLACE won't work in Android P & above
             (parent as? ViewGroup)?.clipChildren = false
             (parent as? ViewGroup)?.clipToPadding = false
-            drawTrack(canvas)
-            drawThumb(canvas)
         }
-        //TODO - Change clip range based on stretchRange
-        //TODO - override and define onMeasure so that wrap_content works as expected
-        //TODO - Assign min, max values and get 'seekbar' values
+        drawTrack(canvas)
+        drawThumb(canvas)
         //TODO - Determine default values for all the attributes, use dp to ensure similar sizing in all devices
         //TODO - Consider using SpringAnimation & SpringForce instead of ValueAnimator?
         //TODO - Expand logic to RubberRangePicker
@@ -379,6 +380,25 @@ class RubberSeekBar : View {
             stretchRangeInDp,
             context.resources.displayMetrics
         )
+    }
+
+    fun getCurrentValue(): Int {
+        if(controlX <= trackStartX) {
+            return minValue
+        } else if (controlX >= trackEndX) {
+            return maxValue
+        }
+        return (((controlX - trackStartX)/(trackEndX-trackStartX)) * (maxValue - minValue)).toInt()
+    }
+
+    fun setCurrentValue(value: Int) {
+        if (trackEndX < 0) {
+            //If this function gets called before the view gets layed out and learns what it's width value is
+            initialControlXPositionQueue.offer(value)
+            return
+        }
+        controlX = ((value).toFloat()/(maxValue - minValue)) * (trackEndX - trackStartX)
+        invalidate()
     }
     //endregion
 
