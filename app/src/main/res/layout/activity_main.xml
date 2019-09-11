@@ -7,16 +7,178 @@
         android:layout_height="match_parent"
         tools:context=".MainActivity">
 
+    <TextView
+            android:id="@+id/elasticBehaviorTextView"
+            android:text="Elastic Behavior"
+            android:textSize="16sp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="8dp"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+    <TextView
+            android:id="@+id/stretchRangeTextView"
+            android:text="Stretch Range"
+            android:textSize="16sp"
+            app:layout_constraintTop_toBottomOf="@+id/elasticBehaviorTextView"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="8dp"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+    <TextView
+            android:id="@+id/dampingRatioTextView"
+            android:text="Damping Ratio"
+            android:textSize="16sp"
+            app:layout_constraintTop_toBottomOf="@+id/stretchRangeTextView"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="8dp"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+    <TextView
+            android:id="@+id/stiffnessTextView"
+            android:text="Stiffness"
+            android:textSize="16sp"
+            app:layout_constraintTop_toBottomOf="@+id/dampingRatioTextView"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="8dp"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+
+    <TextView
+            android:id="@+id/thumbRadiusTextView"
+            android:text="Default Thumb Radius"
+            android:textSize="16sp"
+            app:layout_constraintTop_toBottomOf="@+id/stiffnessTextView"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="8dp"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+    <TextView
+            android:id="@+id/normalTrackWidthTextView"
+            android:text="Normal Track Width"
+            android:textSize="16sp"
+            app:layout_constraintTop_toBottomOf="@+id/thumbRadiusTextView"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="8dp"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+    <TextView
+            android:id="@+id/highlightTrackWidthTextView"
+            android:text="Highlight Track Width"
+            android:textSize="16sp"
+            app:layout_constraintTop_toBottomOf="@+id/normalTrackWidthTextView"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="8dp"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+
+    <android.support.constraint.Barrier
+            android:id="@+id/barrier"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="end"
+            app:constraint_referenced_ids="thumbRadiusTextView,highlightTrackWidthTextView,stretchRangeTextView,elasticBehaviorTextView,dampingRatioTextView,normalTrackWidthTextView,stiffnessTextView"/>
+
+    <RadioGroup
+            android:id="@+id/elasticBehavior"
+            app:layout_constraintStart_toEndOf="@+id/barrier"
+            android:orientation="horizontal"
+            android:layout_width="wrap_content" android:layout_height="wrap_content">
+        <RadioButton
+                android:text="Cubic"
+                android:checked="true"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+        <RadioButton
+                android:text="Linear"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+        <RadioButton
+                android:text="Rigid"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+    </RadioGroup>
+
+    <SeekBar
+            android:id="@+id/stretchRange"
+            android:max="50"
+            android:progress="24"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintStart_toEndOf="@+id/barrier"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/elasticBehaviorTextView"
+            android:layout_width="0dp" android:layout_height="wrap_content"/>
+
+    <SeekBar
+            android:id="@+id/dampingRatio"
+            android:max="10"
+            android:progress="2"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintStart_toEndOf="@+id/barrier"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/stretchRangeTextView"
+            android:layout_width="0dp" android:layout_height="wrap_content"/>
+
+
+    <SeekBar
+            android:id="@+id/stiffness"
+            android:max="20"
+            android:progress="2"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintStart_toEndOf="@+id/barrier"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/dampingRatioTextView"
+            android:layout_width="0dp" android:layout_height="wrap_content"/>
+
+    <SeekBar
+            android:id="@+id/defaultThumbRadius"
+            android:max="50"
+            android:progress="16"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintStart_toEndOf="@+id/barrier"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/stiffnessTextView"
+            android:layout_width="0dp" android:layout_height="wrap_content"/>
+
+    <SeekBar
+            android:id="@+id/normalTrackWidth"
+            android:max="10"
+            android:progress="2"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintStart_toEndOf="@+id/barrier"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/thumbRadiusTextView"
+            android:layout_width="0dp" android:layout_height="wrap_content"/>
+
+
+    <SeekBar
+            android:id="@+id/highlightTrackWidth"
+            android:max="20"
+            android:progress="4"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintStart_toEndOf="@+id/barrier"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/normalTrackWidthTextView"
+            android:layout_width="0dp" android:layout_height="wrap_content"/>
+
+    <android.support.constraint.Guideline
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintGuide_percent="0.6"
+            android:id="@+id/dividerGuideline"/>
+
     <com.jem.rubberpicker.RubberSeekBar
+            android:id="@+id/rubberSeekBar"
             android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginStart="70dp"
-            android:layout_marginEnd="70dp"
-            android:layout_marginTop="200dp"
-            android:layout_marginBottom="200dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintTop_toTopOf="@+id/dividerGuideline"/>
 
 </android.support.constraint.ConstraintLayout>
