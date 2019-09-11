@@ -1,11 +1,8 @@
 package com.jem.rubberpicker
 
-import android.animation.Animator
-import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.*
 import android.graphics.drawable.Drawable
-import android.os.Build
 import android.support.animation.FloatValueHolder
 import android.support.animation.SpringAnimation
 import android.support.animation.SpringForce
@@ -14,6 +11,7 @@ import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import java.lang.IllegalStateException
 import java.util.concurrent.ArrayBlockingQueue
 import kotlin.math.absoluteValue
 
@@ -25,6 +23,7 @@ class RubberSeekBar : View {
         tempPaint.style = Paint.Style.STROKE
         tempPaint.color = normalTrackColor
         tempPaint.strokeWidth = 5f
+        tempPaint.isAntiAlias = true
         tempPaint
     }
     private var path: Path = Path()
@@ -116,19 +115,29 @@ class RubberSeekBar : View {
 
         attrs?.let {
             val typedArray = context.obtainStyledAttributes(attrs, R.styleable.RubberSeekBar, 0, 0)
-            stretchRange = typedArray.getDimensionPixelSize(R.styleable.RubberSeekBar_stretchRange,
-                convertDpToPx(24f).toInt()).toFloat()
-            drawableThumbRadius = typedArray.getDimensionPixelSize(R.styleable.RubberSeekBar_defaultThumbRadius,
-                convertDpToPx(16f).toInt()).toFloat()
-            normalTrackWidth = typedArray.getDimensionPixelSize(R.styleable.RubberSeekBar_normalTrackWidth,
-                convertDpToPx(2f).toInt()).toFloat()
-            highlightTrackWidth = typedArray.getDimensionPixelSize(R.styleable.RubberSeekBar_highlightTrackWidth,
-                convertDpToPx(4f).toInt()).toFloat()
+            stretchRange = typedArray.getDimensionPixelSize(
+                R.styleable.RubberSeekBar_stretchRange,
+                convertDpToPx(24f).toInt()
+            ).toFloat()
+            drawableThumbRadius = typedArray.getDimensionPixelSize(
+                R.styleable.RubberSeekBar_defaultThumbRadius,
+                convertDpToPx(16f).toInt()
+            ).toFloat()
+            normalTrackWidth = typedArray.getDimensionPixelSize(
+                R.styleable.RubberSeekBar_normalTrackWidth,
+                convertDpToPx(2f).toInt()
+            ).toFloat()
+            highlightTrackWidth = typedArray.getDimensionPixelSize(
+                R.styleable.RubberSeekBar_highlightTrackWidth,
+                convertDpToPx(4f).toInt()
+            ).toFloat()
             drawableThumb = typedArray.getDrawable(R.styleable.RubberSeekBar_thumbDrawable)
             normalTrackColor = typedArray.getColor(R.styleable.RubberSeekBar_normalTrackColor, Color.GRAY)
             highlightTrackColor = typedArray.getColor(R.styleable.RubberSeekBar_highlightTrackColor, 0xFF38ACEC.toInt())
-            highlightThumbOnTouchColor = typedArray.getColor(R.styleable.RubberSeekBar_highlightDefaultThumbOnTouchColor, 0xFF82CAFA.toInt())
-            dampingRatio = typedArray.getFloat(R.styleable.RubberSeekBar_dampingRatio, SpringForce.DAMPING_RATIO_HIGH_BOUNCY)
+            highlightThumbOnTouchColor =
+                typedArray.getColor(R.styleable.RubberSeekBar_highlightDefaultThumbOnTouchColor, 0xFF82CAFA.toInt())
+            dampingRatio =
+                typedArray.getFloat(R.styleable.RubberSeekBar_dampingRatio, SpringForce.DAMPING_RATIO_HIGH_BOUNCY)
             stiffness = typedArray.getFloat(R.styleable.RubberSeekBar_stiffness, SpringForce.STIFFNESS_LOW)
             minValue = typedArray.getInt(R.styleable.RubberSeekBar_minValue, 0)
             maxValue = typedArray.getInt(R.styleable.RubberSeekBar_maxValue, 100)
@@ -159,9 +168,9 @@ class RubberSeekBar : View {
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val minimumHeight: Int = if (drawableThumb != null) {
             setDrawableHalfWidthAndHeight()
-            drawableThumbHalfHeight*2
+            drawableThumbHalfHeight * 2
         } else {
-            (drawableThumbRadius*2).toInt()
+            (drawableThumbRadius * 2).toInt()
         }
         setMeasuredDimension(
             getDefaultSize(suggestedMinimumWidth, widthMeasureSpec),
@@ -249,7 +258,7 @@ class RubberSeekBar : View {
     }
 
     private fun drawBezierTrack(canvas: Canvas?) {
-        x1 = (controlX+trackStartX) / 2
+        x1 = (controlX + trackStartX) / 2
         y1 = height.toFloat() / 2
         x2 = x1
         y2 = controlY
@@ -280,7 +289,7 @@ class RubberSeekBar : View {
         path.moveTo(controlX, controlY)
         paint.color = normalTrackColor
         paint.strokeWidth = normalTrackWidth
-        path.lineTo(width.toFloat(), height.toFloat() / 2)
+        path.lineTo(trackEndX, height.toFloat() / 2)
         canvas?.drawPath(path, paint)
     }
 
@@ -298,6 +307,7 @@ class RubberSeekBar : View {
                     controlX = x.coerceHorizontal()
                     controlY = y.coerceVertical().coerceToStretchRange(controlX)
                     onChangeListener?.onStartTrackingTouch(this)
+                    onChangeListener?.onProgressChanged(this, getCurrentValue(), true)
                     invalidate()
                     return true
                 }
@@ -316,13 +326,16 @@ class RubberSeekBar : View {
                     drawableThumbSelected = false
                     controlX = x.coerceHorizontal()
                     controlY = y.coerceVertical().coerceToStretchRange(controlX)
+                    onChangeListener?.onProgressChanged(this, getCurrentValue(), true)
                     onChangeListener?.onStopTrackingTouch(this)
                     springAnimation =
                         SpringAnimation(FloatValueHolder(trackY))
                             .setStartValue(controlY)
-                            .setSpring(SpringForce(trackY)
-                                .setDampingRatio(dampingRatio)
-                                .setStiffness(stiffness))
+                            .setSpring(
+                                SpringForce(trackY)
+                                    .setDampingRatio(dampingRatio)
+                                    .setStiffness(stiffness)
+                            )
                             .addUpdateListener { _, value, _ ->
                                 controlY = value
                                 invalidate()
@@ -373,7 +386,8 @@ class RubberSeekBar : View {
         return TypedValue.applyDimension(
             TypedValue.COMPLEX_UNIT_DIP,
             dpValue,
-            context.resources.displayMetrics)
+            context.resources.displayMetrics
+        )
     }
 
     private fun Float.coerceHorizontal(): Float {
@@ -425,9 +439,23 @@ class RubberSeekBar : View {
         invalidate()
     }
 
+    @Throws(IllegalArgumentException::class, IllegalStateException::class)
     fun setThumbRadius(dpValue: Float) {
+        if (dpValue <= 0) {
+            throw IllegalArgumentException("Thumb radius must be non-negative")
+        }
+        if (drawableThumb != null) {
+            throw IllegalStateException("Thumb radius can not be set when drawable is used as thumb")
+        }
+        val oldRadius = drawableThumbRadius
+        val oldY = trackY
         drawableThumbRadius = convertDpToPx(dpValue)
+        controlX =
+            (((controlX - oldRadius) * (width - (2 * drawableThumbRadius))) / (width - (2 * oldRadius))) + drawableThumbRadius
+        controlY = (controlY * drawableThumbRadius) / oldY
+        if (springAnimation?.isRunning == true) springAnimation?.animateToFinalPosition(drawableThumbRadius)
         invalidate()
+        requestLayout()
     }
 
     fun setNormalTrackWidth(dpValue: Float) {
@@ -455,15 +483,25 @@ class RubberSeekBar : View {
         invalidate()
     }
 
+    @Throws(java.lang.IllegalArgumentException::class)
     fun setDampingRatio(value: Float) {
-        if (value < 0.0f) run { throw IllegalArgumentException("Damping ratio must be non-negative") }
+        if (value < 0.0f) {
+            throw IllegalArgumentException("Damping ratio must be non-negative")
+        }
         dampingRatio = value
+        springAnimation?.spring?.dampingRatio = dampingRatio
+        if (springAnimation?.isRunning == true) springAnimation?.animateToFinalPosition(trackY)
         invalidate()
     }
 
+    @Throws(java.lang.IllegalArgumentException::class)
     fun setStiffness(value: Float) {
-        if (value <= 0.0f) run { throw IllegalArgumentException("Spring stiffness constant must be positive.") }
+        if (value <= 0.0f) {
+            throw IllegalArgumentException("Spring stiffness constant must be positive.")
+        }
         stiffness = value
+        springAnimation?.spring?.stiffness = stiffness
+        if (springAnimation?.isRunning == true) springAnimation?.animateToFinalPosition(trackY)
         invalidate()
     }
 
@@ -476,12 +514,12 @@ class RubberSeekBar : View {
     }
 
     fun getCurrentValue(): Int {
-        if(controlX <= trackStartX) {
+        if (controlX <= trackStartX) {
             return minValue
         } else if (controlX >= trackEndX) {
             return maxValue
         }
-        return (((controlX - trackStartX)/(trackEndX-trackStartX)) * (maxValue - minValue)).toInt()
+        return (((controlX - trackStartX) / (trackEndX - trackStartX)) * (maxValue - minValue)).toInt()
     }
 
     fun setCurrentValue(value: Int) {
@@ -490,7 +528,7 @@ class RubberSeekBar : View {
             initialControlXPositionQueue.offer(value)
             return
         }
-        controlX = ((value).toFloat()/(maxValue - minValue)) * (trackEndX - trackStartX)
+        controlX = ((value).toFloat() / (maxValue - minValue)) * (trackEndX - trackStartX)
         onChangeListener?.onProgressChanged(this, value, false)
         invalidate()
     }
