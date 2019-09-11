@@ -132,7 +132,7 @@ class RubberSeekBar : View {
             stiffness = typedArray.getFloat(R.styleable.RubberSeekBar_stiffness, SpringForce.STIFFNESS_LOW)
             minValue = typedArray.getInt(R.styleable.RubberSeekBar_minValue, 0)
             maxValue = typedArray.getInt(R.styleable.RubberSeekBar_maxValue, 100)
-            elasticBehavior = typedArray.getInt(R.styleable.RubberSeekBar_elasticBehavior, 0).run {
+            elasticBehavior = typedArray.getInt(R.styleable.RubberSeekBar_elasticBehavior, 1).run {
                 when (this) {
                     0 -> ElasticBehavior.LINEAR
                     1 -> ElasticBehavior.CUBIC
@@ -210,6 +210,9 @@ class RubberSeekBar : View {
     }
 
     private fun drawThumb(canvas: Canvas?) {
+        if (elasticBehavior == ElasticBehavior.RIGID) {
+            controlY = trackY
+        }
         if (drawableThumb != null) {
             canvas?.let {
                 canvas.translate(controlX, controlY)
@@ -248,10 +251,10 @@ class RubberSeekBar : View {
     private fun drawRigidTrack(canvas: Canvas?) {
         paint.color = highlightTrackColor
         paint.strokeWidth = highlightTrackWidth
-        canvas?.drawLine(trackStartX, trackY, controlX, controlY, paint)
+        canvas?.drawLine(trackStartX, trackY, controlX, trackY, paint)
         paint.color = normalTrackColor
         paint.strokeWidth = normalTrackWidth
-        canvas?.drawLine(controlX, controlY, trackEndX, trackY, paint)
+        canvas?.drawLine(controlX, trackY, trackEndX, trackY, paint)
     }
 
     private fun drawBezierTrack(canvas: Canvas?) {
@@ -436,6 +439,11 @@ class RubberSeekBar : View {
         invalidate()
     }
 
+    fun setNormalTrackWidth(dpValue: Float) {
+        normalTrackWidth = convertDpToPx(dpValue)
+        invalidate()
+    }
+
     fun setHighlightTrackWidth(dpValue: Float) {
         highlightTrackWidth = convertDpToPx(dpValue)
         invalidate()
@@ -457,11 +465,13 @@ class RubberSeekBar : View {
     }
 
     fun setDampingRatio(value: Float) {
+        if (value < 0.0f) run { throw IllegalArgumentException("Damping ratio must be non-negative") }
         dampingRatio = value
         invalidate()
     }
 
     fun setStiffness(value: Float) {
+        if (value <= 0.0f) run { throw IllegalArgumentException("Spring stiffness constant must be positive.") }
         stiffness = value
         invalidate()
     }
