@@ -189,21 +189,12 @@ class RubberSeekBar : View {
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
-            canvas?.getClipBounds(canvasRect)
-            if (drawableThumb != null) {
-                setDrawableHalfWidthAndHeight()
-                canvasRect.inset(0, -(drawableThumbHalfHeight + stretchRange.toInt()))
-            } else {
-                canvasRect.inset(0, -((drawableThumbRadius + stretchRange).toInt()))
-            }
-            canvas?.clipRect(canvasRect, Region.Op.REPLACE)
-        } else {
-            // TODO - Try to figure out a better way to overcome view clipping
-            // Workaround since Region.Op.REPLACE won't work in Android P & above
-            (parent as? ViewGroup)?.clipChildren = false
-            (parent as? ViewGroup)?.clipToPadding = false
-        }
+        // TODO - Try to figure out a better way to overcome view clipping
+        // Workaround since Region.Op.REPLACE won't work in Android P & above.
+        // Region.Op.REPLACE also doesn't work properly (at times) even in devices below Android P.
+        (parent as? ViewGroup)?.clipChildren = false
+        (parent as? ViewGroup)?.clipToPadding = false
+
         drawTrack(canvas)
         drawThumb(canvas)
         //TODO - Expand logic to RubberRangePicker
