@@ -559,8 +559,6 @@ class RubberRangePicker : View {
             drawableThumbRadius
         )
         setCurrentEndValue(oldEndThumbX)
-        val tempS = getCurrentStartValue()
-        val tempE = getCurrentEndValue()
         endThumbY = (endThumbY * drawableThumbRadius) / oldY
         if (endThumbSpringAnimation?.isRunning == true) endThumbSpringAnimation?.animateToFinalPosition(
             drawableThumbRadius
@@ -622,7 +620,9 @@ class RubberRangePicker : View {
 
     @Throws(java.lang.IllegalArgumentException::class)
     fun setMin(value: Int) {
-        if (value >= maxValue) { throw java.lang.IllegalArgumentException("Min value must be smaller than max value") }
+        if (value >= maxValue) {
+            throw java.lang.IllegalArgumentException("Min value must be smaller than max value")
+        }
         val oldStartValue = getCurrentStartValue()
         val oldEndValue = getCurrentEndValue()
         minValue = value
@@ -637,7 +637,9 @@ class RubberRangePicker : View {
 
     @Throws(java.lang.IllegalArgumentException::class)
     fun setMax(value: Int) {
-        if (value <= minValue) { throw java.lang.IllegalArgumentException("Max value must be greater than min value") }
+        if (value <= minValue) {
+            throw java.lang.IllegalArgumentException("Max value must be greater than min value")
+        }
         val oldStartValue = getCurrentStartValue()
         val oldEndValue = getCurrentEndValue()
         maxValue = value
