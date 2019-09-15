@@ -252,8 +252,6 @@
             android:id="@+id/rubberSeekBar"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintBottom_toTopOf="@+id/rubberSeekBarValueHeading"
@@ -265,8 +263,8 @@
             app:layout_constraintTop_toBottomOf="@+id/rubberSeekBar"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/rubberSeekBarValue"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintBottom_toTopOf="@id/rubberRangePicker"
             android:layout_width="wrap_content" android:layout_height="wrap_content"/>
     <TextView
             android:id="@+id/rubberSeekBarValue"
@@ -277,5 +275,49 @@
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_width="wrap_content" android:layout_height="wrap_content"/>
 
+
+    <com.jem.rubberpicker.RubberRangePicker
+            android:id="@+id/rubberRangePicker"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/rubberSeekBarValueHeading"
+            app:layout_constraintBottom_toTopOf="@+id/rubberRangePickerValueHeading"
+    />
+
+    <TextView
+            android:id="@+id/rubberRangePickerValueHeading"
+            android:text="Seekbar Value : "
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/rubberRangePicker"
+            app:layout_constraintEnd_toStartOf="@+id/rubberRangePickerStartValue"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+    <TextView
+            android:id="@+id/rubberRangePickerStartValue"
+            android:text="0"
+            android:layout_marginLeft="2dp"
+            app:layout_constraintBaseline_toBaselineOf="@id/rubberRangePickerValueHeading"
+            app:layout_constraintStart_toEndOf="@+id/rubberRangePickerValueHeading"
+            app:layout_constraintEnd_toEndOf="@id/rubberRangePickerValueDivider"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+    <TextView
+            android:id="@+id/rubberRangePickerValueDivider"
+            android:text="-"
+            android:layout_marginLeft="2dp"
+            app:layout_constraintBaseline_toBaselineOf="@id/rubberRangePickerValueHeading"
+            app:layout_constraintStart_toEndOf="@+id/rubberRangePickerStartValue"
+            app:layout_constraintEnd_toStartOf="@id/rubberRangePickerEndValue"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+    <TextView
+            android:id="@+id/rubberRangePickerEndValue"
+            android:text="0"
+            android:layout_marginLeft="2dp"
+            app:layout_constraintBaseline_toBaselineOf="@id/rubberRangePickerValueHeading"
+            app:layout_constraintStart_toEndOf="@+id/rubberRangePickerValueDivider"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"/>
 
 </android.support.constraint.ConstraintLayout>
