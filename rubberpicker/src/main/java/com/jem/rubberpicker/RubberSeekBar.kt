@@ -538,7 +538,7 @@ class RubberSeekBar : View {
         } else if (thumbX >= trackEndX) {
             return maxValue
         }
-        return Math.round(((thumbX - trackStartX) / (trackEndX - trackStartX)) * (maxValue - minValue))
+        return Math.round(((thumbX - trackStartX) / (trackEndX - trackStartX)) * (maxValue - minValue)) + minValue
     }
 
     fun setCurrentValue(value: Int) {
@@ -548,7 +548,7 @@ class RubberSeekBar : View {
             initialControlXPositionQueue.offer(validValue)
             return
         }
-        thumbX = (((validValue).toFloat() / (maxValue - minValue)) * (trackEndX - trackStartX)) + trackStartX
+        thumbX = (((validValue - minValue).toFloat() / (maxValue - minValue)) * (trackEndX - trackStartX)) + trackStartX
         onChangeListener?.onProgressChanged(this, getCurrentValue(), false)
         invalidate()
     }

@@ -658,7 +658,7 @@ class RubberRangePicker : View {
         } else if (startThumbX >= trackEndX - getThumbWidth()) {
             return maxValue
         }
-        return Math.round((((startThumbX - trackStartX) / ((trackEndX - getThumbWidth()) - trackStartX)) * (maxValue - minValue)))
+        return Math.round((((startThumbX - trackStartX) / ((trackEndX - getThumbWidth()) - trackStartX)) * (maxValue - minValue))) + minValue
     }
 
     fun setCurrentStartValue(value: Int) {
@@ -669,7 +669,7 @@ class RubberRangePicker : View {
             return
         }
         startThumbX =
-            (((validValue).toFloat() / (maxValue - minValue)) * ((trackEndX - getThumbWidth()) - trackStartX)) + trackStartX
+            (((validValue - minValue).toFloat() / (maxValue - minValue)) * ((trackEndX - getThumbWidth()) - trackStartX)) + trackStartX
         adjustStartEndThumbXPositions(true)
         onChangeListener?.onProgressChanged(this, getCurrentStartValue(), getCurrentEndValue(), false)
         invalidate()
@@ -681,7 +681,7 @@ class RubberRangePicker : View {
         } else if (endThumbX >= trackEndX) {
             return maxValue
         }
-        return Math.round((((endThumbX - (trackStartX + getThumbWidth())) / (trackEndX - (trackStartX + getThumbWidth()))) * (maxValue - minValue)))
+        return Math.round((((endThumbX - (trackStartX + getThumbWidth())) / (trackEndX - (trackStartX + getThumbWidth()))) * (maxValue - minValue))) + minValue
     }
 
     fun setCurrentEndValue(value: Int) {
@@ -692,7 +692,7 @@ class RubberRangePicker : View {
             return
         }
         endThumbX =
-            (((validValue).toFloat() / (maxValue - minValue)) * (trackEndX - (trackStartX + getThumbWidth()))) + (trackStartX + getThumbWidth())
+            (((validValue - minValue).toFloat() / (maxValue - minValue)) * (trackEndX - (trackStartX + getThumbWidth()))) + (trackStartX + getThumbWidth())
         adjustStartEndThumbXPositions(false)
         onChangeListener?.onProgressChanged(this, getCurrentStartValue(), getCurrentEndValue(), false)
         invalidate()
