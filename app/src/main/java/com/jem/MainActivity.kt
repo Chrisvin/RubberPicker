@@ -100,8 +100,8 @@ class MainActivity : AppCompatActivity() {
         })
 
         rubberSeekBar.setOnRubberSeekBarChangeListener(object: RubberSeekBar.OnRubberSeekBarChangeListener{
-            override fun onProgressChanged(seekBar: RubberSeekBar, progress: Int, fromUser: Boolean) {
-                rubberSeekBarValue.text = progress.toString()
+            override fun onProgressChanged(seekBar: RubberSeekBar, value: Int, fromUser: Boolean) {
+                rubberSeekBarValue.text = value.toString()
             }
             override fun onStartTrackingTouch(seekBar: RubberSeekBar) {}
             override fun onStopTrackingTouch(seekBar: RubberSeekBar) {}

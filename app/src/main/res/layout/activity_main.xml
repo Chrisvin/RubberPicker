@@ -259,7 +259,7 @@
 
     <TextView
             android:id="@+id/rubberSeekBarValueHeading"
-            android:text="Seekbar Value : "
+            android:text="RubberSeekBar Value : "
             app:layout_constraintTop_toBottomOf="@+id/rubberSeekBar"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/rubberSeekBarValue"
@@ -288,7 +288,7 @@
 
     <TextView
             android:id="@+id/rubberRangePickerValueHeading"
-            android:text="Seekbar Value : "
+            android:text="RubberRangePicker Values : "
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/rubberRangePicker"
             app:layout_constraintEnd_toStartOf="@+id/rubberRangePickerStartValue"
