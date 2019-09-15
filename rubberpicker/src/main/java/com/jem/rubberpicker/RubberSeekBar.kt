@@ -28,8 +28,8 @@ class RubberSeekBar : View {
     }
     private var path: Path = Path()
     private var springAnimation: SpringAnimation? = null
-    private var controlX: Float = -1f
-    private var controlY: Float = -1f
+    private var thumbX: Float = -1f
+    private var thumbY: Float = -1f
     private val initialControlXPositionQueue = ArrayBlockingQueue<Int>(1)
     // Used to determine the start and end points of the track.
     // Useful for drawing and also for other calculations.
@@ -60,8 +60,6 @@ class RubberSeekBar : View {
     private var y1: Float = 0f
     private var x2: Float = 0f
     private var y2: Float = 0f
-
-    private val canvasRect = Rect()
 
     private var stretchRange: Float = -1f
 
@@ -155,13 +153,13 @@ class RubberSeekBar : View {
 
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
         super.onLayout(changed, left, top, right, bottom)
-        if (controlX < trackStartX) {
+        if (thumbX < trackStartX) {
             if (initialControlXPositionQueue.isEmpty()) {
-                controlX = trackStartX
+                thumbX = trackStartX
             } else {
                 setCurrentValue(initialControlXPositionQueue.poll())
             }
-            controlY = trackY
+            thumbY = trackY
         }
     }
 
@@ -206,34 +204,33 @@ class RubberSeekBar : View {
 
         drawTrack(canvas)
         drawThumb(canvas)
-        //TODO - Expand logic to RubberRangePicker
     }
 
     private fun drawThumb(canvas: Canvas?) {
         if (elasticBehavior == ElasticBehavior.RIGID) {
-            controlY = trackY
+            thumbY = trackY
         }
         if (drawableThumb != null) {
             canvas?.let {
-                canvas.translate(controlX, controlY)
+                canvas.translate(thumbX, thumbY)
                 drawableThumb?.draw(it)
             }
         } else {
             paint.color = highlightTrackColor
             paint.style = Paint.Style.FILL
-            canvas?.drawCircle(controlX, controlY, drawableThumbRadius, paint)
+            canvas?.drawCircle(thumbX, thumbY, drawableThumbRadius, paint)
             if (drawableThumbSelected) {
                 paint.color = highlightThumbOnTouchColor
             } else {
                 paint.color = Color.WHITE
             }
-            canvas?.drawCircle(controlX, controlY, drawableThumbRadius - highlightTrackWidth, paint)
+            canvas?.drawCircle(thumbX, thumbY, drawableThumbRadius - highlightTrackWidth, paint)
             paint.style = Paint.Style.STROKE
         }
     }
 
     private fun drawTrack(canvas: Canvas?) {
-        if (controlY == trackY) {
+        if (thumbY == trackY) {
             drawRigidTrack(canvas)
             return
         }
@@ -251,26 +248,26 @@ class RubberSeekBar : View {
     private fun drawRigidTrack(canvas: Canvas?) {
         paint.color = highlightTrackColor
         paint.strokeWidth = highlightTrackWidth
-        canvas?.drawLine(trackStartX, trackY, controlX, trackY, paint)
+        canvas?.drawLine(trackStartX, trackY, thumbX, trackY, paint)
         paint.color = normalTrackColor
         paint.strokeWidth = normalTrackWidth
-        canvas?.drawLine(controlX, trackY, trackEndX, trackY, paint)
+        canvas?.drawLine(thumbX, trackY, trackEndX, trackY, paint)
     }
 
     private fun drawBezierTrack(canvas: Canvas?) {
-        x1 = (controlX + trackStartX) / 2
+        x1 = (thumbX + trackStartX) / 2
         y1 = height.toFloat() / 2
         x2 = x1
-        y2 = controlY
-        path.cubicTo(x1, y1, x2, y2, controlX, controlY)
+        y2 = thumbY
+        path.cubicTo(x1, y1, x2, y2, thumbX, thumbY)
         paint.color = highlightTrackColor
         paint.strokeWidth = highlightTrackWidth
         canvas?.drawPath(path, paint)
 
         path.reset()
-        path.moveTo(controlX, controlY)
-        x1 = (controlX + trackEndX) / 2
-        y1 = controlY
+        path.moveTo(thumbX, thumbY)
+        x1 = (thumbX + trackEndX) / 2
+        y1 = thumbY
         x2 = x1
         y2 = height.toFloat() / 2
         path.cubicTo(x1, y1, x2, y2, trackEndX, trackY)
@@ -282,11 +279,11 @@ class RubberSeekBar : View {
     private fun drawLinearTrack(canvas: Canvas?) {
         paint.color = highlightTrackColor
         paint.strokeWidth = highlightTrackWidth
-        path.lineTo(controlX, controlY)
+        path.lineTo(thumbX, thumbY)
         canvas?.drawPath(path, paint)
 
         path.reset()
-        path.moveTo(controlX, controlY)
+        path.moveTo(thumbX, thumbY)
         paint.color = normalTrackColor
         paint.strokeWidth = normalTrackWidth
         path.lineTo(trackEndX, height.toFloat() / 2)
@@ -304,18 +301,18 @@ class RubberSeekBar : View {
                 if (isTouchPointInDrawableThumb(x, y)) {
                     springAnimation?.cancel()
                     drawableThumbSelected = true
-                    controlX = x.coerceHorizontal()
-                    controlY = y.coerceVertical().coerceToStretchRange(controlX)
+//                    thumbX = x.coerceHorizontal()
+//                    thumbY = y.coerceVertical().coerceToStretchRange(thumbX)
                     onChangeListener?.onStartTrackingTouch(this)
-                    onChangeListener?.onProgressChanged(this, getCurrentValue(), true)
+//                    onChangeListener?.onProgressChanged(this, getCurrentValue(), true)
                     invalidate()
                     return true
                 }
             }
             MotionEvent.ACTION_MOVE -> {
                 if (drawableThumbSelected) {
-                    controlX = x.coerceHorizontal()
-                    controlY = y.coerceVertical().coerceToStretchRange(controlX)
+                    thumbX = x.coerceHorizontal()
+                    thumbY = y.coerceVertical().coerceToStretchRange(thumbX)
                     onChangeListener?.onProgressChanged(this, getCurrentValue(), true)
                     invalidate()
                     return true
@@ -324,24 +321,24 @@ class RubberSeekBar : View {
             MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                 if (drawableThumbSelected) {
                     drawableThumbSelected = false
-                    controlX = x.coerceHorizontal()
-                    controlY = y.coerceVertical().coerceToStretchRange(controlX)
-                    onChangeListener?.onProgressChanged(this, getCurrentValue(), true)
+//                    thumbX = x.coerceHorizontal()
+//                    thumbY = y.coerceVertical().coerceToStretchRange(thumbX)
+//                    onChangeListener?.onProgressChanged(this, getCurrentValue(), true)
                     onChangeListener?.onStopTrackingTouch(this)
                     springAnimation =
                         SpringAnimation(FloatValueHolder(trackY))
-                            .setStartValue(controlY)
+                            .setStartValue(thumbY)
                             .setSpring(
                                 SpringForce(trackY)
                                     .setDampingRatio(dampingRatio)
                                     .setStiffness(stiffness)
                             )
                             .addUpdateListener { _, value, _ ->
-                                controlY = value
+                                thumbY = value
                                 invalidate()
                             }
                             .addEndListener { _, _, _, _ ->
-                                controlY = trackY
+                                thumbY = trackY
                                 invalidate()
                             }
                     springAnimation?.start()
@@ -356,15 +353,15 @@ class RubberSeekBar : View {
         if (drawableThumb != null) {
             drawableThumb?.let {
                 setDrawableHalfWidthAndHeight()
-                if (x > controlX - drawableThumbHalfWidth && x < controlX + drawableThumbHalfWidth &&
-                    y > controlY - drawableThumbHalfHeight && x < controlY + drawableThumbHalfHeight
+                if (x > thumbX - drawableThumbHalfWidth && x < thumbX + drawableThumbHalfWidth &&
+                    y > thumbY - drawableThumbHalfHeight && x < thumbY + drawableThumbHalfHeight
                 ) {
                     return true
                 }
             }
         } else {
-            if ((x - controlX) * (x - controlX) +
-                (y - controlY) * (y - controlY) <= drawableThumbRadius * drawableThumbRadius
+            if ((x - thumbX) * (x - thumbX) +
+                (y - thumbY) * (y - thumbY) <= drawableThumbRadius * drawableThumbRadius
             ) {
                 return true
             }
@@ -424,6 +421,9 @@ class RubberSeekBar : View {
      */
     fun setElasticBehavior(elasticBehavior: ElasticBehavior) {
         this.elasticBehavior = elasticBehavior
+        if (elasticBehavior == ElasticBehavior.RIGID) {
+            springAnimation?.cancel()
+        }
         invalidate()
     }
 
@@ -447,12 +447,11 @@ class RubberSeekBar : View {
         if (drawableThumb != null) {
             throw IllegalStateException("Thumb radius can not be set when drawable is used as thumb")
         }
-        val oldRadius = drawableThumbRadius
         val oldY = trackY
+        val oldThumbValue = getCurrentValue()
         drawableThumbRadius = convertDpToPx(dpValue)
-        controlX =
-            (((controlX - oldRadius) * (width - (2 * drawableThumbRadius))) / (width - (2 * oldRadius))) + drawableThumbRadius
-        controlY = (controlY * drawableThumbRadius) / oldY
+        setCurrentValue(oldThumbValue)
+        thumbY = (thumbY * drawableThumbRadius) / oldY
         if (springAnimation?.isRunning == true) springAnimation?.animateToFinalPosition(drawableThumbRadius)
         invalidate()
         requestLayout()
@@ -505,31 +504,48 @@ class RubberSeekBar : View {
         invalidate()
     }
 
+    @Throws(java.lang.IllegalArgumentException::class)
     fun setMin(value: Int) {
+        if (value >= maxValue) { throw java.lang.IllegalArgumentException("Min value must be smaller than max value") }
+        val oldValue = getCurrentValue()
         minValue = value
+        if (minValue > oldValue) {
+            setCurrentValue(minValue)
+        } else {
+            setCurrentValue(oldValue)
+        }
     }
 
+    @Throws(java.lang.IllegalArgumentException::class)
     fun setMax(value: Int) {
+        if (value <= minValue) { throw java.lang.IllegalArgumentException("Max value must be greater than min value") }
+        val oldValue = getCurrentValue()
         maxValue = value
+        if (maxValue < oldValue) {
+            setCurrentValue(maxValue)
+        } else {
+            setCurrentValue(oldValue)
+        }
     }
 
     fun getCurrentValue(): Int {
-        if (controlX <= trackStartX) {
+        if (thumbX <= trackStartX) {
             return minValue
-        } else if (controlX >= trackEndX) {
+        } else if (thumbX >= trackEndX) {
             return maxValue
         }
-        return (((controlX - trackStartX) / (trackEndX - trackStartX)) * (maxValue - minValue)).toInt()
+        return Math.round(((thumbX - trackStartX) / (trackEndX - trackStartX)) * (maxValue - minValue))
     }
 
     fun setCurrentValue(value: Int) {
+        val validValue = value.coerceAtLeast(minValue).coerceAtMost(maxValue)
         if (trackEndX < 0) {
             //If this function gets called before the view gets layed out and learns what it's width value is
-            initialControlXPositionQueue.offer(value)
+            initialControlXPositionQueue.offer(validValue)
             return
         }
-        controlX = ((value).toFloat() / (maxValue - minValue)) * (trackEndX - trackStartX)
-        onChangeListener?.onProgressChanged(this, value, false)
+        thumbX = (((validValue).toFloat() / (maxValue - minValue)) * (trackEndX - trackStartX)) + trackStartX
+        onChangeListener?.onProgressChanged(this, getCurrentValue(), false)
         invalidate()
     }
 
@@ -545,7 +561,7 @@ class RubberSeekBar : View {
      * Based on the SeekBar.onSeekBarChangeListener
      */
     interface OnRubberSeekBarChangeListener {
-        fun onProgressChanged(seekBar: RubberSeekBar, progress: Int, fromUser: Boolean)
+        fun onProgressChanged(seekBar: RubberSeekBar, value: Int, fromUser: Boolean)
         fun onStartTrackingTouch(seekBar: RubberSeekBar)
         fun onStopTrackingTouch(seekBar: RubberSeekBar)
     }
