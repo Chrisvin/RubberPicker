@@ -2,6 +2,8 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-silver.svg)](https://opensource.org/licenses/MIT) [![](https://jitpack.io/v/Chrisvin/RubberPicker.svg)](https://jitpack.io/#Chrisvin/RubberPicker)
 
+<p align="center"><img src="RubberPicker-Demo.gif"/></p>
+
 RubberPicker library contains the `RubberSeekBar` and `RubberRangePicker`, inspired by [Cuberto's rubber-range-picker](https://github.com/Cuberto/rubber-range-picker).
 
 ## Getting started
@@ -98,6 +100,11 @@ rubberRangePicker.setOnRubberRangePickerChangeListener(object: RubberRangePicker
     override fun onStopTrackingTouch(rangePicker: RubberRangePicker, isStartThumb: Boolean) {}
 })
 ```
+
+## Todo
+- [ ] Refactor code to remove redundant code between RubberSeekBar & RubberRangePicker.
+- [ ] Add step attribute, make necessary UI adjustments for step based value increments.
+- [ ] Current library overcomes view clipping by setting the parent layout's clipChildren & clipToPadding as false. Find a better alternative to overcome view clipping.
 
 ## Bugs and Feedback
 For bugs, questions and discussions please use the [Github Issues](https://github.com/Chrisvin/RubberPicker/issues).
