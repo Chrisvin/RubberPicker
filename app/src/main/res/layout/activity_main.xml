@@ -284,7 +284,9 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/rubberSeekBarValueHeading"
             app:layout_constraintBottom_toTopOf="@+id/rubberRangePickerValueHeading"
-    />
+            app:normalTrackColor="#AAAAAA"
+            app:highlightTrackColor="#BA1F33"
+            app:highlightDefaultThumbOnTouchColor="#CD5D67"/>
 
     <TextView
             android:id="@+id/rubberRangePickerValueHeading"
