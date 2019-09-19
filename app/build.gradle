@@ -32,5 +32,5 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 
 //    implementation project(":rubberpicker")
-    implementation 'com.github.Chrisvin:rubberpicker:v1.1'
+    implementation 'com.github.Chrisvin:rubberpicker:v1.2'
 }
