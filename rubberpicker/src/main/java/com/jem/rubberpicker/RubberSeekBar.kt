@@ -1,17 +1,18 @@
 package com.jem.rubberpicker
 
 import android.content.Context
-import android.graphics.*
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.Path
 import android.graphics.drawable.Drawable
 import android.support.animation.FloatValueHolder
 import android.support.animation.SpringAnimation
 import android.support.animation.SpringForce
 import android.util.AttributeSet
-import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import java.lang.IllegalStateException
 import java.util.concurrent.ArrayBlockingQueue
 import kotlin.math.absoluteValue
 
@@ -101,10 +102,10 @@ class RubberSeekBar : View {
     }
 
     private fun init(attrs: AttributeSet?) {
-        stretchRange = convertDpToPx(24f)
-        drawableThumbRadius = convertDpToPx(16f)
-        normalTrackWidth = convertDpToPx(2f)
-        highlightTrackWidth = convertDpToPx(4f)
+        stretchRange = convertDpToPx(context, 24f)
+        drawableThumbRadius = convertDpToPx(context, 16f)
+        normalTrackWidth = convertDpToPx(context, 2f)
+        highlightTrackWidth = convertDpToPx(context, 4f)
         normalTrackColor = Color.GRAY
         highlightTrackColor = 0xFF38ACEC.toInt()
         highlightThumbOnTouchColor = 0xFF82CAFA.toInt()
@@ -115,28 +116,39 @@ class RubberSeekBar : View {
             val typedArray = context.obtainStyledAttributes(attrs, R.styleable.RubberSeekBar, 0, 0)
             stretchRange = typedArray.getDimensionPixelSize(
                 R.styleable.RubberSeekBar_stretchRange,
-                convertDpToPx(24f).toInt()
+                convertDpToPx(context, 24f).toInt()
             ).toFloat()
             drawableThumbRadius = typedArray.getDimensionPixelSize(
                 R.styleable.RubberSeekBar_defaultThumbRadius,
-                convertDpToPx(16f).toInt()
+                convertDpToPx(context, 16f).toInt()
             ).toFloat()
             normalTrackWidth = typedArray.getDimensionPixelSize(
                 R.styleable.RubberSeekBar_normalTrackWidth,
-                convertDpToPx(2f).toInt()
+                convertDpToPx(context, 2f).toInt()
             ).toFloat()
             highlightTrackWidth = typedArray.getDimensionPixelSize(
                 R.styleable.RubberSeekBar_highlightTrackWidth,
-                convertDpToPx(4f).toInt()
+                convertDpToPx(context, 4f).toInt()
             ).toFloat()
             drawableThumb = typedArray.getDrawable(R.styleable.RubberSeekBar_thumbDrawable)
-            normalTrackColor = typedArray.getColor(R.styleable.RubberSeekBar_normalTrackColor, Color.GRAY)
-            highlightTrackColor = typedArray.getColor(R.styleable.RubberSeekBar_highlightTrackColor, 0xFF38ACEC.toInt())
+            normalTrackColor =
+                typedArray.getColor(R.styleable.RubberSeekBar_normalTrackColor, Color.GRAY)
+            highlightTrackColor = typedArray.getColor(
+                R.styleable.RubberSeekBar_highlightTrackColor,
+                0xFF38ACEC.toInt()
+            )
             highlightThumbOnTouchColor =
-                typedArray.getColor(R.styleable.RubberSeekBar_highlightDefaultThumbOnTouchColor, 0xFF82CAFA.toInt())
+                typedArray.getColor(
+                    R.styleable.RubberSeekBar_highlightDefaultThumbOnTouchColor,
+                    0xFF82CAFA.toInt()
+                )
             dampingRatio =
-                typedArray.getFloat(R.styleable.RubberSeekBar_dampingRatio, SpringForce.DAMPING_RATIO_HIGH_BOUNCY)
-            stiffness = typedArray.getFloat(R.styleable.RubberSeekBar_stiffness, SpringForce.STIFFNESS_LOW)
+                typedArray.getFloat(
+                    R.styleable.RubberSeekBar_dampingRatio,
+                    SpringForce.DAMPING_RATIO_HIGH_BOUNCY
+                )
+            stiffness =
+                typedArray.getFloat(R.styleable.RubberSeekBar_stiffness, SpringForce.STIFFNESS_LOW)
             minValue = typedArray.getInt(R.styleable.RubberSeekBar_minValue, 0)
             maxValue = typedArray.getInt(R.styleable.RubberSeekBar_maxValue, 100)
             elasticBehavior = typedArray.getInt(R.styleable.RubberSeekBar_elasticBehavior, 1).run {
@@ -379,14 +391,6 @@ class RubberSeekBar : View {
         }
     }
 
-    private fun convertDpToPx(dpValue: Float): Float {
-        return TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_DIP,
-            dpValue,
-            context.resources.displayMetrics
-        )
-    }
-
     private fun Float.coerceHorizontal(): Float {
         return this.coerceAtMost(trackEndX).coerceAtLeast(trackStartX)
     }
@@ -435,7 +439,7 @@ class RubberSeekBar : View {
         if (stretchRangeInDp < 0) {
             throw IllegalArgumentException("Stretch range value can not be negative")
         }
-        this.stretchRange = convertDpToPx(stretchRangeInDp)
+        this.stretchRange = convertDpToPx(context, stretchRangeInDp)
         invalidate()
     }
 
@@ -449,21 +453,23 @@ class RubberSeekBar : View {
         }
         val oldY = trackY
         val oldThumbValue = getCurrentValue()
-        drawableThumbRadius = convertDpToPx(dpValue)
+        drawableThumbRadius = convertDpToPx(context, dpValue)
         setCurrentValue(oldThumbValue)
         thumbY = (thumbY * drawableThumbRadius) / oldY
-        if (springAnimation?.isRunning == true) springAnimation?.animateToFinalPosition(drawableThumbRadius)
+        if (springAnimation?.isRunning == true) springAnimation?.animateToFinalPosition(
+            drawableThumbRadius
+        )
         invalidate()
         requestLayout()
     }
 
     fun setNormalTrackWidth(dpValue: Float) {
-        normalTrackWidth = convertDpToPx(dpValue)
+        normalTrackWidth = convertDpToPx(context, dpValue)
         invalidate()
     }
 
     fun setHighlightTrackWidth(dpValue: Float) {
-        highlightTrackWidth = convertDpToPx(dpValue)
+        highlightTrackWidth = convertDpToPx(context, dpValue)
         invalidate()
     }
 
@@ -548,7 +554,8 @@ class RubberSeekBar : View {
             initialControlXPositionQueue.offer(validValue)
             return
         }
-        thumbX = (((validValue - minValue).toFloat() / (maxValue - minValue)) * (trackEndX - trackStartX)) + trackStartX
+        thumbX =
+            (((validValue - minValue).toFloat() / (maxValue - minValue)) * (trackEndX - trackStartX)) + trackStartX
         onChangeListener?.onProgressChanged(this, getCurrentValue(), false)
         invalidate()
     }
