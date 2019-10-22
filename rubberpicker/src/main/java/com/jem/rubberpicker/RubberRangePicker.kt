@@ -11,7 +11,6 @@ import android.support.animation.FloatValueHolder
 import android.support.animation.SpringAnimation
 import android.support.animation.SpringForce
 import android.util.AttributeSet
-import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
@@ -110,10 +109,10 @@ class RubberRangePicker : View {
     }
 
     private fun init(attrs: AttributeSet?) {
-        stretchRange = convertDpToPx(24f)
-        drawableThumbRadius = convertDpToPx(16f)
-        normalTrackWidth = convertDpToPx(2f)
-        highlightTrackWidth = convertDpToPx(4f)
+        stretchRange = convertDpToPx(context, 24f)
+        drawableThumbRadius = convertDpToPx(context, 16f)
+        normalTrackWidth = convertDpToPx(context, 2f)
+        highlightTrackWidth = convertDpToPx(context, 4f)
         normalTrackColor = Color.GRAY
         highlightTrackColor = 0xFF38ACEC.toInt()
         highlightThumbOnTouchColor = 0xFF82CAFA.toInt()
@@ -121,42 +120,57 @@ class RubberRangePicker : View {
         stiffness = SpringForce.STIFFNESS_LOW
 
         attrs?.let {
-            val typedArray = context.obtainStyledAttributes(attrs, R.styleable.RubberRangePicker, 0, 0)
+            val typedArray =
+                context.obtainStyledAttributes(attrs, R.styleable.RubberRangePicker, 0, 0)
             stretchRange = typedArray.getDimensionPixelSize(
                 R.styleable.RubberRangePicker_stretchRange,
-                convertDpToPx(24f).toInt()
+                convertDpToPx(context, 24f).toInt()
             ).toFloat()
             drawableThumbRadius = typedArray.getDimensionPixelSize(
                 R.styleable.RubberRangePicker_defaultThumbRadius,
-                convertDpToPx(16f).toInt()
+                convertDpToPx(context, 16f).toInt()
             ).toFloat()
             normalTrackWidth = typedArray.getDimensionPixelSize(
                 R.styleable.RubberRangePicker_normalTrackWidth,
-                convertDpToPx(2f).toInt()
+                convertDpToPx(context, 2f).toInt()
             ).toFloat()
             highlightTrackWidth = typedArray.getDimensionPixelSize(
                 R.styleable.RubberRangePicker_highlightTrackWidth,
-                convertDpToPx(4f).toInt()
+                convertDpToPx(context, 4f).toInt()
             ).toFloat()
             drawableThumb = typedArray.getDrawable(R.styleable.RubberRangePicker_thumbDrawable)
-            normalTrackColor = typedArray.getColor(R.styleable.RubberRangePicker_normalTrackColor, Color.GRAY)
+            normalTrackColor =
+                typedArray.getColor(R.styleable.RubberRangePicker_normalTrackColor, Color.GRAY)
             highlightTrackColor =
-                typedArray.getColor(R.styleable.RubberRangePicker_highlightTrackColor, 0xFF38ACEC.toInt())
+                typedArray.getColor(
+                    R.styleable.RubberRangePicker_highlightTrackColor,
+                    0xFF38ACEC.toInt()
+                )
             highlightThumbOnTouchColor =
-                typedArray.getColor(R.styleable.RubberRangePicker_highlightDefaultThumbOnTouchColor, 0xFF82CAFA.toInt())
+                typedArray.getColor(
+                    R.styleable.RubberRangePicker_highlightDefaultThumbOnTouchColor,
+                    0xFF82CAFA.toInt()
+                )
             dampingRatio =
-                typedArray.getFloat(R.styleable.RubberRangePicker_dampingRatio, SpringForce.DAMPING_RATIO_HIGH_BOUNCY)
-            stiffness = typedArray.getFloat(R.styleable.RubberRangePicker_stiffness, SpringForce.STIFFNESS_LOW)
+                typedArray.getFloat(
+                    R.styleable.RubberRangePicker_dampingRatio,
+                    SpringForce.DAMPING_RATIO_HIGH_BOUNCY
+                )
+            stiffness = typedArray.getFloat(
+                R.styleable.RubberRangePicker_stiffness,
+                SpringForce.STIFFNESS_LOW
+            )
             minValue = typedArray.getInt(R.styleable.RubberRangePicker_minValue, 0)
             maxValue = typedArray.getInt(R.styleable.RubberRangePicker_maxValue, 100)
-            elasticBehavior = typedArray.getInt(R.styleable.RubberRangePicker_elasticBehavior, 1).run {
-                when (this) {
-                    0 -> ElasticBehavior.LINEAR
-                    1 -> ElasticBehavior.CUBIC
-                    2 -> ElasticBehavior.RIGID
-                    else -> ElasticBehavior.CUBIC
+            elasticBehavior =
+                typedArray.getInt(R.styleable.RubberRangePicker_elasticBehavior, 1).run {
+                    when (this) {
+                        0 -> ElasticBehavior.LINEAR
+                        1 -> ElasticBehavior.CUBIC
+                        2 -> ElasticBehavior.RIGID
+                        else -> ElasticBehavior.CUBIC
+                    }
                 }
-            }
             typedArray.recycle()
         }
     }
@@ -251,7 +265,12 @@ class RubberRangePicker : View {
         }
     }
 
-    private fun drawThumbCircles(canvas: Canvas?, posX: Float, posY: Float, thumbSelected: Boolean) {
+    private fun drawThumbCircles(
+        canvas: Canvas?,
+        posX: Float,
+        posY: Float,
+        thumbSelected: Boolean
+    ) {
         paint.color = highlightTrackColor
         paint.style = Paint.Style.FILL
         canvas?.drawCircle(posX, posY, drawableThumbRadius, paint)
@@ -414,7 +433,12 @@ class RubberRangePicker : View {
                                 .coerceToStretchRange(thumbXReference.get(), startX, endX)
                         )
                     }
-                    onChangeListener?.onProgressChanged(this, getCurrentStartValue(), getCurrentEndValue(), true)
+                    onChangeListener?.onProgressChanged(
+                        this,
+                        getCurrentStartValue(),
+                        getCurrentEndValue(),
+                        true
+                    )
                     invalidate()
                     return true
                 }
@@ -458,7 +482,12 @@ class RubberRangePicker : View {
         }
     }
 
-    private fun isTouchPointInDrawableThumb(x: Float, y: Float, thumbX: Float, thumbY: Float): Boolean {
+    private fun isTouchPointInDrawableThumb(
+        x: Float,
+        y: Float,
+        thumbX: Float,
+        thumbY: Float
+    ): Boolean {
         if (drawableThumb != null) {
             drawableThumb?.let {
                 setDrawableHalfWidthAndHeight()
@@ -483,17 +512,11 @@ class RubberRangePicker : View {
             return
         }
         drawableThumb?.let {
-            drawableThumbHalfWidth = ((it.bounds.right - it.bounds.left).absoluteValue).toFloat() / 2
-            drawableThumbHalfHeight = ((it.bounds.bottom - it.bounds.top).absoluteValue).toFloat() / 2
+            drawableThumbHalfWidth =
+                ((it.bounds.right - it.bounds.left).absoluteValue).toFloat() / 2
+            drawableThumbHalfHeight =
+                ((it.bounds.bottom - it.bounds.top).absoluteValue).toFloat() / 2
         }
-    }
-
-    private fun convertDpToPx(dpValue: Float): Float {
-        return TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_DIP,
-            dpValue,
-            context.resources.displayMetrics
-        )
     }
 
     private fun Float.coerceToStretchRange(x: Float, startX: Float, endX: Float): Float {
@@ -537,7 +560,7 @@ class RubberRangePicker : View {
         if (stretchRangeInDp < 0) {
             throw IllegalArgumentException("Stretch range value can not be negative")
         }
-        this.stretchRange = convertDpToPx(stretchRangeInDp)
+        this.stretchRange = convertDpToPx(context, stretchRangeInDp)
         invalidate()
     }
 
@@ -552,7 +575,7 @@ class RubberRangePicker : View {
         val oldY = trackY
         val oldStartThumbX = getCurrentStartValue()
         val oldEndThumbX = getCurrentEndValue()
-        drawableThumbRadius = convertDpToPx(dpValue)
+        drawableThumbRadius = convertDpToPx(context, dpValue)
         setCurrentStartValue(oldStartThumbX)
         startThumbY = (startThumbY * drawableThumbRadius) / oldY
         if (startThumbSpringAnimation?.isRunning == true) startThumbSpringAnimation?.animateToFinalPosition(
@@ -568,12 +591,12 @@ class RubberRangePicker : View {
     }
 
     fun setNormalTrackWidth(dpValue: Float) {
-        normalTrackWidth = convertDpToPx(dpValue)
+        normalTrackWidth = convertDpToPx(context, dpValue)
         invalidate()
     }
 
     fun setHighlightTrackWidth(dpValue: Float) {
-        highlightTrackWidth = convertDpToPx(dpValue)
+        highlightTrackWidth = convertDpToPx(context, dpValue)
         invalidate()
     }
 
@@ -600,8 +623,12 @@ class RubberRangePicker : View {
         dampingRatio = value
         startThumbSpringAnimation?.spring?.dampingRatio = dampingRatio
         endThumbSpringAnimation?.spring?.dampingRatio = dampingRatio
-        if (startThumbSpringAnimation?.isRunning == true) startThumbSpringAnimation?.animateToFinalPosition(trackY)
-        if (endThumbSpringAnimation?.isRunning == true) endThumbSpringAnimation?.animateToFinalPosition(trackY)
+        if (startThumbSpringAnimation?.isRunning == true) startThumbSpringAnimation?.animateToFinalPosition(
+            trackY
+        )
+        if (endThumbSpringAnimation?.isRunning == true) endThumbSpringAnimation?.animateToFinalPosition(
+            trackY
+        )
         invalidate()
     }
 
@@ -613,8 +640,12 @@ class RubberRangePicker : View {
         stiffness = value
         startThumbSpringAnimation?.spring?.stiffness = stiffness
         endThumbSpringAnimation?.spring?.stiffness = stiffness
-        if (startThumbSpringAnimation?.isRunning == true) startThumbSpringAnimation?.animateToFinalPosition(trackY)
-        if (endThumbSpringAnimation?.isRunning == true) endThumbSpringAnimation?.animateToFinalPosition(trackY)
+        if (startThumbSpringAnimation?.isRunning == true) startThumbSpringAnimation?.animateToFinalPosition(
+            trackY
+        )
+        if (endThumbSpringAnimation?.isRunning == true) endThumbSpringAnimation?.animateToFinalPosition(
+            trackY
+        )
         invalidate()
     }
 
@@ -671,7 +702,12 @@ class RubberRangePicker : View {
         startThumbX =
             (((validValue - minValue).toFloat() / (maxValue - minValue)) * ((trackEndX - getThumbWidth()) - trackStartX)) + trackStartX
         adjustStartEndThumbXPositions(true)
-        onChangeListener?.onProgressChanged(this, getCurrentStartValue(), getCurrentEndValue(), false)
+        onChangeListener?.onProgressChanged(
+            this,
+            getCurrentStartValue(),
+            getCurrentEndValue(),
+            false
+        )
         invalidate()
     }
 
@@ -694,7 +730,12 @@ class RubberRangePicker : View {
         endThumbX =
             (((validValue - minValue).toFloat() / (maxValue - minValue)) * (trackEndX - (trackStartX + getThumbWidth()))) + (trackStartX + getThumbWidth())
         adjustStartEndThumbXPositions(false)
-        onChangeListener?.onProgressChanged(this, getCurrentStartValue(), getCurrentEndValue(), false)
+        onChangeListener?.onProgressChanged(
+            this,
+            getCurrentStartValue(),
+            getCurrentEndValue(),
+            false
+        )
         invalidate()
     }
 
@@ -710,7 +751,13 @@ class RubberRangePicker : View {
      * Based on the RubberSeekBar.onSeekBarChangeListener
      */
     interface OnRubberRangePickerChangeListener {
-        fun onProgressChanged(rangePicker: RubberRangePicker, startValue: Int, endValue: Int, fromUser: Boolean)
+        fun onProgressChanged(
+            rangePicker: RubberRangePicker,
+            startValue: Int,
+            endValue: Int,
+            fromUser: Boolean
+        )
+
         fun onStartTrackingTouch(rangePicker: RubberRangePicker, isStartThumb: Boolean)
         fun onStopTrackingTouch(rangePicker: RubberRangePicker, isStartThumb: Boolean)
     }
