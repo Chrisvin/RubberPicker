@@ -20,6 +20,7 @@
             app:layout_constraintTop_toTopOf="@id/topGuideLine"
             app:layout_constraintStart_toStartOf="parent"
             android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
             android:layout_marginTop="4dp"
             android:layout_width="wrap_content" android:layout_height="wrap_content"/>
     <TextView
@@ -29,6 +30,7 @@
             app:layout_constraintTop_toBottomOf="@+id/elasticBehaviorTextView"
             app:layout_constraintStart_toStartOf="parent"
             android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
             android:layout_marginTop="8dp"
             android:layout_width="wrap_content" android:layout_height="wrap_content"/>
     <TextView
@@ -38,6 +40,7 @@
             app:layout_constraintTop_toBottomOf="@+id/stretchRangeTextView"
             app:layout_constraintStart_toStartOf="parent"
             android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
             android:layout_marginTop="8dp"
             android:layout_width="wrap_content" android:layout_height="wrap_content"/>
     <TextView
@@ -47,6 +50,7 @@
             app:layout_constraintTop_toBottomOf="@+id/dampingRatioTextView"
             app:layout_constraintStart_toStartOf="parent"
             android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
             android:layout_marginTop="8dp"
             android:layout_width="wrap_content" android:layout_height="wrap_content"/>
 
@@ -57,6 +61,7 @@
             app:layout_constraintTop_toBottomOf="@+id/stiffnessTextView"
             app:layout_constraintStart_toStartOf="parent"
             android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
             android:layout_marginTop="8dp"
             android:layout_width="wrap_content" android:layout_height="wrap_content"/>
     <TextView
@@ -66,6 +71,7 @@
             app:layout_constraintTop_toBottomOf="@+id/thumbRadiusTextView"
             app:layout_constraintStart_toStartOf="parent"
             android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
             android:layout_marginTop="8dp"
             android:layout_width="wrap_content" android:layout_height="wrap_content"/>
     <TextView
@@ -75,6 +81,7 @@
             app:layout_constraintTop_toBottomOf="@+id/normalTrackWidthTextView"
             app:layout_constraintStart_toStartOf="parent"
             android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
             android:layout_marginTop="8dp"
             android:layout_width="wrap_content" android:layout_height="wrap_content"/>
 
@@ -110,6 +117,7 @@
             android:id="@+id/stretchRangeValue"
             android:text="24"
             android:paddingStart="4dp"
+            android:paddingLeft="4dp"
             android:textSize="16sp"
             android:layout_marginTop="8dp"
             app:layout_constraintTop_toBottomOf="@+id/elasticBehaviorTextView"
@@ -122,6 +130,7 @@
             android:progress="24"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
             app:layout_constraintStart_toEndOf="@+id/stretchRangeValue"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/elasticBehaviorTextView"
@@ -133,6 +142,7 @@
             android:textSize="16sp"
             android:layout_marginTop="8dp"
             android:paddingStart="4dp"
+            android:paddingLeft="4dp"
             app:layout_constraintTop_toBottomOf="@+id/stretchRangeTextView"
             app:layout_constraintStart_toStartOf="@+id/barrier"
             android:layout_width="36sp" android:layout_height="wrap_content"/>
@@ -143,6 +153,7 @@
             android:progress="2"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
             app:layout_constraintStart_toEndOf="@+id/dampingRatioValue"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/stretchRangeTextView"
@@ -154,6 +165,7 @@
             android:textSize="16sp"
             android:layout_marginTop="8dp"
             android:paddingStart="4dp"
+            android:paddingLeft="4dp"
             app:layout_constraintTop_toBottomOf="@+id/dampingRatioTextView"
             app:layout_constraintStart_toStartOf="@+id/barrier"
             android:layout_width="40sp" android:layout_height="wrap_content"/>
@@ -165,6 +177,7 @@
             android:visibility="invisible"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="4sp"
+            android:layout_marginRight="4dp"
             android:layout_width="0dp" android:layout_height="0dp"/>
 
     <SeekBar
@@ -173,6 +186,7 @@
             android:progress="4"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
             app:layout_constraintStart_toEndOf="@+id/stiffnessEmptyView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/dampingRatioTextView"
@@ -184,6 +198,7 @@
             android:text="16"
             android:layout_marginTop="8dp"
             android:paddingStart="4dp"
+            android:paddingLeft="4dp"
             app:layout_constraintTop_toBottomOf="@+id/stiffnessTextView"
             app:layout_constraintStart_toStartOf="@+id/barrier"
             android:layout_width="36sp" android:layout_height="wrap_content"/>
@@ -194,6 +209,7 @@
             android:progress="16"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
             app:layout_constraintStart_toEndOf="@+id/defaultThumbRadiusValue"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/stiffnessTextView"
@@ -205,6 +221,7 @@
             android:text="2"
             android:layout_marginTop="8dp"
             android:paddingStart="4dp"
+            android:paddingLeft="4dp"
             app:layout_constraintTop_toBottomOf="@+id/thumbRadiusTextView"
             app:layout_constraintStart_toStartOf="@+id/barrier"
             android:layout_width="36sp" android:layout_height="wrap_content"/>
@@ -215,6 +232,7 @@
             android:progress="2"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
             app:layout_constraintStart_toEndOf="@+id/normalTrackWidthValue"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/thumbRadiusTextView"
@@ -226,6 +244,7 @@
             android:text="4"
             android:layout_marginTop="8dp"
             android:paddingStart="4dp"
+            android:paddingLeft="4dp"
             app:layout_constraintTop_toBottomOf="@+id/normalTrackWidthTextView"
             app:layout_constraintStart_toStartOf="@+id/barrier"
             android:layout_width="36sp" android:layout_height="wrap_content"/>
@@ -236,6 +255,7 @@
             android:progress="4"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
             app:layout_constraintStart_toEndOf="@+id/highlightTrackWidthValue"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/normalTrackWidthTextView"
