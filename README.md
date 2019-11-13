@@ -1,6 +1,6 @@
 # RubberPicker
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-silver.svg)](https://opensource.org/licenses/MIT) [![](https://jitpack.io/v/Chrisvin/RubberPicker.svg)](https://jitpack.io/#Chrisvin/RubberPicker) [![API](https://img.shields.io/badge/API-15%2B-blue.svg?style=flat)](https://android-arsenal.com/api?level=15)
+[![License: MIT](https://img.shields.io/badge/License-MIT-silver.svg)](https://opensource.org/licenses/MIT) [![](https://jitpack.io/v/Chrisvin/RubberPicker.svg)](https://jitpack.io/#Chrisvin/RubberPicker) [![API](https://img.shields.io/badge/API-15%2B-blue.svg?style=flat)](https://android-arsenal.com/api?level=15) [![Android Arsenal]( https://img.shields.io/badge/Android%20Arsenal-RubberPicker-gold.svg?style=flat )]( https://android-arsenal.com/details/1/7867 )
 
 <p align="center"><img src="RubberPicker-Demo.gif"/></p>
 
