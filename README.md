@@ -19,7 +19,7 @@ allprojects {
 ```
 2. Add the RubberPicker dependency in the build.gradle:
 ```
-implementation 'com.github.Chrisvin:RubberPicker:v1.1'
+implementation 'com.github.Chrisvin:RubberPicker:v1.2'
 ```
 
 ### Demo app
