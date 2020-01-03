@@ -177,7 +177,7 @@ class RubberRangePicker : View {
 
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
         super.onLayout(changed, left, top, right, bottom)
-        if (startThumbX < trackStartX) {
+        if (startThumbX < trackStartX || !initialStartThumbXPositionQueue.isEmpty()) {
             if (initialStartThumbXPositionQueue.isEmpty()) {
                 startThumbX = trackStartX
             } else {
@@ -185,7 +185,7 @@ class RubberRangePicker : View {
             }
             startThumbY = trackY
         }
-        if (endThumbX < trackStartX) {
+        if (endThumbX < trackStartX || !initialEndThumbXPositionQueue.isEmpty()) {
             if (initialEndThumbXPositionQueue.isEmpty()) {
                 endThumbX = trackStartX + getThumbWidth()
             } else {
