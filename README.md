@@ -19,7 +19,7 @@ allprojects {
 ```
 2. Add the RubberPicker dependency in the build.gradle:
 ```
-implementation 'com.github.Chrisvin:RubberPicker:v1.2'
+implementation 'com.github.Chrisvin:RubberPicker:v1.4'
 ```
 
 ### Demo app
@@ -41,6 +41,7 @@ To run the demo project, clone the repository and run it via Android Studio.
   app:highlightTrackWidth="8dp"
   app:normalTrackColor="#AAAAAA"
   app:highlightTrackColor="#BA1F33"
+  app:defaultThumbInsideColor="#FFF"
   app:highlightDefaultThumbOnTouchColor="#CD5D67"/>
 
 <!-- Similar attributes can be applied for RubberRangePicker as well-->
@@ -57,6 +58,7 @@ To run the demo project, clone the repository and run it via Android Studio.
   app:highlightTrackWidth="8dp"
   app:normalTrackColor="#AAAAAA"
   app:highlightTrackColor="#BA1F33"
+  app:defaultThumbInsideColor="#CFCD5D67"
   app:highlightDefaultThumbOnTouchColor="#CD5D67"/>
 ```
 ### Adding/Modifying programmatically
@@ -74,6 +76,7 @@ rubberSeekBar.setHighlightTrackWidth(4f)
 rubberSeekBar.setNormalTrackColor(Color.GRAY)
 rubberSeekBar.setHighlightTrackColor(Color.BLUE)
 rubberSeekBar.setHighlightThumbOnTouchColor(Color.CYAN)
+rubberSeekBar.setDefaultThumbInsideColor(Color.WHITE)
 
 val currentValue = rubberSeekBar.getCurrentValue()
 rubberSeekBar.setCurrentValue(currentValue + 10)
