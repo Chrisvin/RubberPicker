@@ -18,6 +18,7 @@
         <attr name="stiffness" format="float"/>
         <attr name="minValue" format="integer"/>
         <attr name="maxValue" format="integer"/>
+        <attr name="initialValue" format="integer"/>
     </declare-styleable>
 
     <declare-styleable name="RubberRangePicker">

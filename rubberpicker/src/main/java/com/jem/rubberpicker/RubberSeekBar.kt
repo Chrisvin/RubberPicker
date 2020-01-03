@@ -159,6 +159,9 @@ class RubberSeekBar : View {
                     else -> ElasticBehavior.CUBIC
                 }
             }
+            if (typedArray.hasValue(R.styleable.RubberSeekBar_initialValue)) {
+                setCurrentValue(typedArray.getInt(R.styleable.RubberSeekBar_initialValue, minValue))
+            }
             typedArray.recycle()
         }
     }
@@ -551,6 +554,10 @@ class RubberSeekBar : View {
         val validValue = value.coerceAtLeast(minValue).coerceAtMost(maxValue)
         if (trackEndX < 0) {
             //If this function gets called before the view gets layed out and learns what it's width value is
+            if (initialControlXPositionQueue.isNotEmpty()) {
+                //Incase this is called multiple times, always use the latest value
+                initialControlXPositionQueue.clear()
+            }
             initialControlXPositionQueue.offer(validValue)
             return
         }
