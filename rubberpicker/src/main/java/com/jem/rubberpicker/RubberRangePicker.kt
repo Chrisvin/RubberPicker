@@ -171,6 +171,12 @@ class RubberRangePicker : View {
                         else -> ElasticBehavior.CUBIC
                     }
                 }
+            if (typedArray.hasValue(R.styleable.RubberRangePicker_initialStartValue)) {
+                setCurrentStartValue(typedArray.getInt(R.styleable.RubberRangePicker_initialStartValue, minValue))
+            }
+            if (typedArray.hasValue(R.styleable.RubberRangePicker_initialEndValue)) {
+                setCurrentEndValue(typedArray.getInt(R.styleable.RubberRangePicker_initialEndValue, minValue))
+            }
             typedArray.recycle()
         }
     }
@@ -696,6 +702,10 @@ class RubberRangePicker : View {
         val validValue = value.coerceAtLeast(minValue).coerceAtMost(maxValue)
         if (trackEndX < 0) {
             //If this function gets called before the view gets layed out and learns what it's width value is
+            if (initialStartThumbXPositionQueue.isNotEmpty()) {
+                //Incase this is called multiple times, always use the latest value
+                initialStartThumbXPositionQueue.clear()
+            }
             initialStartThumbXPositionQueue.offer(validValue)
             return
         }
@@ -724,6 +734,10 @@ class RubberRangePicker : View {
         val validValue = value.coerceAtLeast(minValue).coerceAtMost(maxValue)
         if (trackEndX < 0) {
             //If this function gets called before the view gets layed out and learns what it's width value is
+            if (initialEndThumbXPositionQueue.isNotEmpty()) {
+                //Incase this is called multiple times, always use the latest value
+                initialEndThumbXPositionQueue.clear()
+            }
             initialEndThumbXPositionQueue.offer(validValue)
             return
         }

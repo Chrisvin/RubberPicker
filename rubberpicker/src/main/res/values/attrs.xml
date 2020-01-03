@@ -35,5 +35,7 @@
         <attr name="stiffness"/>
         <attr name="minValue"/>
         <attr name="maxValue"/>
+        <attr name="initialStartValue" format="integer"/>
+        <attr name="initialEndValue" format="integer"/>
     </declare-styleable>
 </resources>
