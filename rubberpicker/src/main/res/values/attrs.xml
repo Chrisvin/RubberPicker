@@ -14,6 +14,7 @@
         <attr name="normalTrackColor" format="color" />
         <attr name="highlightTrackColor" format="color"/>
         <attr name="highlightDefaultThumbOnTouchColor" format="color"/>
+        <attr name="defaultThumbInsideColor" format="color"/>
         <attr name="dampingRatio" format="float"/>
         <attr name="stiffness" format="float"/>
         <attr name="minValue" format="integer"/>
@@ -31,6 +32,7 @@
         <attr name="normalTrackColor"/>
         <attr name="highlightTrackColor"/>
         <attr name="highlightDefaultThumbOnTouchColor"/>
+        <attr name="defaultThumbInsideColor"/>
         <attr name="dampingRatio"/>
         <attr name="stiffness"/>
         <attr name="minValue"/>

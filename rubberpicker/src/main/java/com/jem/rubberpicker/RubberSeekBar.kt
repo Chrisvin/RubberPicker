@@ -78,6 +78,7 @@ class RubberSeekBar : View {
     private var normalTrackColor: Int = 0
     private var highlightTrackColor: Int = 0
     private var highlightThumbOnTouchColor: Int = 0
+    private var defaultThumbInsideColor: Int = 0
     private var dampingRatio: Float = 0f
     private var stiffness: Float = 0f
 
@@ -109,6 +110,7 @@ class RubberSeekBar : View {
         normalTrackColor = Color.GRAY
         highlightTrackColor = 0xFF38ACEC.toInt()
         highlightThumbOnTouchColor = 0xFF82CAFA.toInt()
+        defaultThumbInsideColor = Color.WHITE
         dampingRatio = SpringForce.DAMPING_RATIO_HIGH_BOUNCY
         stiffness = SpringForce.STIFFNESS_LOW
 
@@ -141,6 +143,11 @@ class RubberSeekBar : View {
                 typedArray.getColor(
                     R.styleable.RubberSeekBar_highlightDefaultThumbOnTouchColor,
                     0xFF82CAFA.toInt()
+                )
+            defaultThumbInsideColor =
+                typedArray.getColor(
+                    R.styleable.RubberSeekBar_defaultThumbInsideColor,
+                    Color.WHITE
                 )
             dampingRatio =
                 typedArray.getFloat(
@@ -237,7 +244,7 @@ class RubberSeekBar : View {
             if (drawableThumbSelected) {
                 paint.color = highlightThumbOnTouchColor
             } else {
-                paint.color = Color.WHITE
+                paint.color = defaultThumbInsideColor
             }
             canvas?.drawCircle(thumbX, thumbY, drawableThumbRadius - highlightTrackWidth, paint)
             paint.style = Paint.Style.STROKE
@@ -488,6 +495,11 @@ class RubberSeekBar : View {
 
     fun setHighlightThumbOnTouchColor(value: Int) {
         highlightThumbOnTouchColor = value
+        invalidate()
+    }
+
+    fun setDefaultThumbInsideColor(value: Int) {
+        defaultThumbInsideColor = value
         invalidate()
     }
 

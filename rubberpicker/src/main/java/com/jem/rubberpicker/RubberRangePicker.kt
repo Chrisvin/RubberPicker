@@ -85,6 +85,7 @@ class RubberRangePicker : View {
     private var normalTrackColor: Int = 0
     private var highlightTrackColor: Int = 0
     private var highlightThumbOnTouchColor: Int = 0
+    private var defaultThumbInsideColor: Int = 0
     private var dampingRatio: Float = 0f
     private var stiffness: Float = 0f
 
@@ -116,6 +117,7 @@ class RubberRangePicker : View {
         normalTrackColor = Color.GRAY
         highlightTrackColor = 0xFF38ACEC.toInt()
         highlightThumbOnTouchColor = 0xFF82CAFA.toInt()
+        defaultThumbInsideColor = Color.WHITE
         dampingRatio = SpringForce.DAMPING_RATIO_HIGH_BOUNCY
         stiffness = SpringForce.STIFFNESS_LOW
 
@@ -150,6 +152,11 @@ class RubberRangePicker : View {
                 typedArray.getColor(
                     R.styleable.RubberRangePicker_highlightDefaultThumbOnTouchColor,
                     0xFF82CAFA.toInt()
+                )
+            defaultThumbInsideColor =
+                typedArray.getColor(
+                    R.styleable.RubberRangePicker_defaultThumbInsideColor,
+                    Color.WHITE
                 )
             dampingRatio =
                 typedArray.getFloat(
@@ -283,7 +290,7 @@ class RubberRangePicker : View {
         if (thumbSelected) {
             paint.color = highlightThumbOnTouchColor
         } else {
-            paint.color = Color.WHITE
+            paint.color = defaultThumbInsideColor
         }
         canvas?.drawCircle(posX, posY, drawableThumbRadius - highlightTrackWidth, paint)
         paint.style = Paint.Style.STROKE
@@ -618,6 +625,11 @@ class RubberRangePicker : View {
 
     fun setHighlightThumbOnTouchColor(value: Int) {
         highlightThumbOnTouchColor = value
+        invalidate()
+    }
+
+    fun setDefaultThumbInsideColor(value: Int) {
+        defaultThumbInsideColor = value
         invalidate()
     }
 
