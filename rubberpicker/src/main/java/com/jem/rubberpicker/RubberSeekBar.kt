@@ -430,6 +430,42 @@ class RubberSeekBar : View {
     }
 
     //region Public functions
+
+    //region Getter functions
+
+    fun getCurrentValue(): Int {
+        if (thumbX <= trackStartX) {
+            return minValue
+        } else if (thumbX >= trackEndX) {
+            return maxValue
+        }
+        return Math.round(((thumbX - trackStartX) / (trackEndX - trackStartX)) * (maxValue - minValue)) + minValue
+    }
+
+    fun getMin(): Int {
+        return minValue
+    }
+
+    fun getMax(): Int {
+        return maxValue
+    }
+
+    fun getElasticBehavior(): ElasticBehavior {
+        return elasticBehavior
+    }
+
+    fun getDampingRation(): Float {
+        return dampingRatio
+    }
+
+    fun getStiffness(): Float {
+        return stiffness
+    }
+
+    //endregion
+
+    //region Setter functions
+
     /**
      * Set the Elastic Behavior for the SeekBar.
      */
@@ -553,15 +589,6 @@ class RubberSeekBar : View {
         }
     }
 
-    fun getCurrentValue(): Int {
-        if (thumbX <= trackStartX) {
-            return minValue
-        } else if (thumbX >= trackEndX) {
-            return maxValue
-        }
-        return Math.round(((thumbX - trackStartX) / (trackEndX - trackStartX)) * (maxValue - minValue)) + minValue
-    }
-
     fun setCurrentValue(value: Int) {
         val validValue = value.coerceAtLeast(minValue).coerceAtMost(maxValue)
         if (trackEndX < 0) {
@@ -582,6 +609,8 @@ class RubberSeekBar : View {
     fun setOnRubberSeekBarChangeListener(listener: OnRubberSeekBarChangeListener) {
         onChangeListener = listener
     }
+    //endregion
+
     //endregion
 
     // TODO - Fill out the necessary comments and descriptions

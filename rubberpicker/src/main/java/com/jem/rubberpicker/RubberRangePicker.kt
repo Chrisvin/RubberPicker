@@ -553,6 +553,51 @@ class RubberRangePicker : View {
     }
 
     //region Public functions
+
+    //region Getter functions
+
+    fun getCurrentStartValue(): Int {
+        if (startThumbX <= trackStartX) {
+            return minValue
+        } else if (startThumbX >= trackEndX - getThumbWidth()) {
+            return maxValue
+        }
+        return Math.round((((startThumbX - trackStartX) / ((trackEndX - getThumbWidth()) - trackStartX)) * (maxValue - minValue))) + minValue
+    }
+
+    fun getCurrentEndValue(): Int {
+        if (endThumbX <= trackStartX + getThumbWidth()) {
+            return minValue
+        } else if (endThumbX >= trackEndX) {
+            return maxValue
+        }
+        return Math.round((((endThumbX - (trackStartX + getThumbWidth())) / (trackEndX - (trackStartX + getThumbWidth()))) * (maxValue - minValue))) + minValue
+    }
+
+    fun getMin(): Int {
+        return minValue
+    }
+
+    fun getMax(): Int {
+        return maxValue
+    }
+
+    fun getElasticBehavior(): ElasticBehavior {
+        return elasticBehavior
+    }
+
+    fun getDampingRation(): Float {
+        return dampingRatio
+    }
+
+    fun getStiffness(): Float {
+        return stiffness
+    }
+
+    //endregion
+
+    //region Setter functions
+
     /**
      * Set the Elastic Behavior for the RangePicker.
      */
@@ -701,15 +746,6 @@ class RubberRangePicker : View {
         }
     }
 
-    fun getCurrentStartValue(): Int {
-        if (startThumbX <= trackStartX) {
-            return minValue
-        } else if (startThumbX >= trackEndX - getThumbWidth()) {
-            return maxValue
-        }
-        return Math.round((((startThumbX - trackStartX) / ((trackEndX - getThumbWidth()) - trackStartX)) * (maxValue - minValue))) + minValue
-    }
-
     fun setCurrentStartValue(value: Int) {
         val validValue = value.coerceAtLeast(minValue).coerceAtMost(maxValue)
         if (trackEndX < 0) {
@@ -731,15 +767,6 @@ class RubberRangePicker : View {
             false
         )
         invalidate()
-    }
-
-    fun getCurrentEndValue(): Int {
-        if (endThumbX <= trackStartX + getThumbWidth()) {
-            return minValue
-        } else if (endThumbX >= trackEndX) {
-            return maxValue
-        }
-        return Math.round((((endThumbX - (trackStartX + getThumbWidth())) / (trackEndX - (trackStartX + getThumbWidth()))) * (maxValue - minValue))) + minValue
     }
 
     fun setCurrentEndValue(value: Int) {
@@ -768,6 +795,7 @@ class RubberRangePicker : View {
     fun setOnRubberRangePickerChangeListener(listener: OnRubberRangePickerChangeListener) {
         onChangeListener = listener
     }
+    //endregion
     //endregion
 
     // TODO - Fill out the necessary comments and descriptions
