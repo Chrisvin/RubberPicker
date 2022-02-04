@@ -2,7 +2,7 @@ package com.jem
 
 import android.os.Bundle
 import android.os.Handler
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import android.util.Log
 import android.widget.RadioButton
 import android.widget.SeekBar
@@ -10,7 +10,7 @@ import com.jem.rubberpicker.ElasticBehavior
 import com.jem.rubberpicker.RubberRangePicker
 import com.jem.rubberpicker.RubberSeekBar
 import kotlinx.android.synthetic.main.activity_main.*
-import android.support.v4.os.HandlerCompat.postDelayed
+import androidx.core.os.HandlerCompat.postDelayed
 
 
 

@@ -7,9 +7,9 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.drawable.Drawable
-import android.support.animation.FloatValueHolder
-import android.support.animation.SpringAnimation
-import android.support.animation.SpringForce
+import androidx.dynamicanimation.animation.FloatValueHolder
+import androidx.dynamicanimation.animation.SpringAnimation
+import androidx.dynamicanimation.animation.SpringForce
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
